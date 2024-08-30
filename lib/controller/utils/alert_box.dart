@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
+import 'package:ttpdm_admin/views/screens/auth_section/login_screen.dart';
 import 'package:ttpdm_admin/views/screens/super_admin/bottom_bar.dart';
 import 'package:ttpdm_admin/views/screens/mid_admin/businesses.dart';
 import 'package:ttpdm_admin/views/screens/super_admin/tab_bar.dart';
@@ -87,7 +91,11 @@ void openChooseEditProfile(BuildContext context) {
                   getVerticalSpace(2.6.h),
                   customElevatedButton(
                       onTap: () {},
-                      title: 'Save',
+                      title: Text(
+                        'Save',
+                        style: CustomTextStyles.buttonTextStyle.copyWith(
+                            color: AppColors.whiteColor, fontFamily: 'bold'),
+                      ),
                       bgColor: AppColors.mainColor,
                       verticalPadding: .8.h,
                       horizentalPadding: 6.h),
@@ -225,7 +233,12 @@ void openUserEdit(BuildContext context, String userName) {
                             onTap: () {
                               Get.back();
                             },
-                            title: 'Cancel',
+                            title: Text(
+                              'Cancel',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xff999999),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -236,7 +249,12 @@ void openUserEdit(BuildContext context, String userName) {
                             onTap: () {
                               Get.to(() => const BottomNavigationBarAdmin());
                             },
-                            title: 'Save',
+                            title: Text(
+                              'Save',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xff34C759),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -309,7 +327,11 @@ void openShareCode(BuildContext context) {
                   getVerticalSpace(4.h),
                   customElevatedButton(
                       onTap: () {},
-                      title: 'Share',
+                      title: Text(
+                        'Share',
+                        style: CustomTextStyles.buttonTextStyle.copyWith(
+                            color: AppColors.whiteColor, fontFamily: 'bold'),
+                      ),
                       bgColor: AppColors.mainColor,
                       verticalPadding: .6.h,
                       horizentalPadding: 4.6.h),
@@ -419,7 +441,12 @@ void openCreateNewPlan(BuildContext context) {
                       Expanded(
                         child: customElevatedButton(
                             onTap: () {},
-                            title: 'Cancel',
+                            title: Text(
+                              'Cancel',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xff999999),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -428,7 +455,12 @@ void openCreateNewPlan(BuildContext context) {
                       Expanded(
                         child: customElevatedButton(
                             onTap: () {},
-                            title: 'Create',
+                            title: Text(
+                              'Create',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: AppColors.mainColor,
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -544,7 +576,12 @@ void openSubscription(BuildContext context) {
                             onTap: () {
                               Get.back();
                             },
-                            title: 'Cancel',
+                            title: Text(
+                              'Cancel',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xff000000).withOpacity(0.8),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -553,9 +590,14 @@ void openSubscription(BuildContext context) {
                       Expanded(
                         child: customElevatedButton(
                             onTap: () {
-                              Get.to(()=>BundlesTabBar());
+                              Get.to(() => BundlesTabBar());
                             },
-                            title: 'Save',
+                            title: Text(
+                              'Save',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xff34C759),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -639,7 +681,12 @@ void openRejectReason(BuildContext context) {
                       Expanded(
                         child: customElevatedButton(
                             onTap: () {},
-                            title: 'Deny',
+                            title: Text(
+                              'Deny',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xffC3C3C2),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -648,7 +695,12 @@ void openRejectReason(BuildContext context) {
                       Expanded(
                         child: customElevatedButton(
                             onTap: () {},
-                            title: 'Send',
+                            title: Text(
+                              'Send',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: AppColors.mainColor,
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -808,7 +860,12 @@ void addAnalytics(BuildContext context) {
                             onTap: () {
                               Get.back();
                             },
-                            title: 'Deny',
+                            title: Text(
+                              'Deny',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xffC3C3C2),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -817,9 +874,14 @@ void addAnalytics(BuildContext context) {
                       Expanded(
                         child: customElevatedButton(
                             onTap: () {
-                              Get.to(() => BusinessTabBar());
+                              Get.to(() => const BusinessTabBar());
                             },
-                            title: 'Send',
+                            title: Text(
+                              'Send',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: AppColors.mainColor,
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -895,7 +957,6 @@ void manageApproval(BuildContext context) {
                         fontFamily: 'bold'),
                   ),
                   getVerticalSpace(4.7.h),
-
                   Row(
                     children: [
                       Expanded(
@@ -903,7 +964,12 @@ void manageApproval(BuildContext context) {
                             onTap: () {
                               Get.back();
                             },
-                            title: 'Reject',
+                            title: Text(
+                              'Reject',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: const Color(0xffC3C3C2),
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),
@@ -914,7 +980,122 @@ void manageApproval(BuildContext context) {
                             onTap: () {
                               Get.to(() => BusinessApproval());
                             },
-                            title: 'Approve',
+                            title: Text(
+                              'Approve',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
+                            bgColor: AppColors.mainColor,
+                            verticalPadding: .6.h,
+                            horizentalPadding: 1.6.h),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void logoutPopUp(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 2.h,
+          ),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 2.4.h, vertical: 2.h),
+              height: 33.h,
+              decoration: BoxDecoration(
+                  color: const Color(0xffF8F9FA),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(child: SizedBox()),
+                      Text(
+                        'Manage Logout',
+                        style: CustomTextStyles.buttonTextStyle.copyWith(
+                            color: AppColors.blackColor,
+                            fontFamily: 'bold',
+                            fontSize: 16.px),
+                      ),
+                      const Expanded(child: SizedBox()),
+                      GestureDetector(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: SizedBox(
+                            height: 3.h,
+                            width: 3.h,
+                            child: const Image(
+                                image:
+                                    AssetImage('assets/pngs/crossicon.png'))),
+                      ),
+                    ],
+                  ),
+                  getVerticalSpace(1.2.h),
+                  const Divider(
+                    color: Colors.grey,
+                  ),
+                  getVerticalSpace(1.h),
+                  SvgPicture.asset(
+                    "assets/svgs/logout.svg",
+                    color: AppColors.mainColor,
+                  ),
+                  getVerticalSpace(1.h),
+                  Text(
+                    'Are You Sure ! you want to Logout',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.mainColor,
+                        fontSize: 16.px,
+                        fontFamily: 'bold'),
+                  ),
+                  getVerticalSpace(4.7.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: customElevatedButton(
+                            onTap: () {
+                              Get.back();
+                            },
+                            title: Text(
+                              'No',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
+                            bgColor: const Color(0xffC3C3C2),
+                            verticalPadding: .6.h,
+                            horizentalPadding: 1.6.h),
+                      ),
+                      getHorizentalSpace(1.6.h),
+                      Expanded(
+                        child: customElevatedButton(
+                            onTap: () {
+                              MySharedPreferences.setBool(isLoggedInKey, false);
+                              Get.off(() => LoginScreen());
+                            },
+                            title: Text(
+                              'Yes',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
                             bgColor: AppColors.mainColor,
                             verticalPadding: .6.h,
                             horizentalPadding: 1.6.h),

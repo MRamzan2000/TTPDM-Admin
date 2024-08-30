@@ -37,7 +37,7 @@ Widget pngImage(String name) {
 //Custom Elevated Button
 Widget customElevatedButton(
     {Callback? onTap,
-    required String title,
+    required Widget title,
     Color? bgColor,
     double? horizentalPadding,
     double? verticalPadding,
@@ -49,11 +49,7 @@ Widget customElevatedButton(
       padding: EdgeInsets.symmetric(
           horizontal: horizentalPadding ?? 6.h,
           vertical: verticalPadding ?? 1.h),
-      child: Text(
-        title,
-        style: CustomTextStyles.buttonTextStyle.copyWith(
-            color: titleColor ?? AppColors.whiteColor, fontFamily: 'bold'),
-      ),
+      child:title
     ),
   );
 }

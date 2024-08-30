@@ -3,6 +3,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/utils/alert_box.dart';
 
 
 class SettingScreen extends StatelessWidget {
@@ -67,13 +68,18 @@ class SettingScreen extends StatelessWidget {
               getVerticalSpace(.8.h),
               const Divider(color: Color(0xff6E6E6D),),
               getVerticalSpace(1.h),
-              Text(
-                'Logout',
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'bold',
-                    color: const Color(0xff191918),
-                    fontSize: 16.px),
+              GestureDetector(
+                onTap: () {
+                  logoutPopUp(context);
+                },
+                child: Text(
+                  'Logout',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'bold',
+                      color: const Color(0xff191918),
+                      fontSize: 16.px),
+                ),
               ),
             ],
           ),

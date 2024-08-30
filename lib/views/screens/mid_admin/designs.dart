@@ -41,7 +41,7 @@ class DesignScreen extends StatelessWidget {
                 itemCount: profilesList.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(onTap: (){
-                    Get.to(()=> BusinessProfile());
+                    // Get.to(()=> BusinessProfile());
                   },
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 1.2.h),

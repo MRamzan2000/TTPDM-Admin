@@ -4,8 +4,8 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/views/screens/super_admin/business_details.dart';
 
-import 'business_details.dart';
 
 
 class BusinessApproval extends StatelessWidget {
@@ -42,7 +42,22 @@ class BusinessApproval extends StatelessWidget {
                 itemCount: profilesList.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(onTap: (){
-                    Get.to(()=> BusinessAdmin(title: 'SuperAdmin',));
+                    Get.to(()=> BusinessAdmin(
+                      title: 'SuperAdmin',
+                      businessName: '',
+                      phoneNumber: '',
+                      location: '',
+                      targetArea: '',
+                      description: '',
+                      businessId: '',
+                      imagesList: [],
+                      logo: '',
+                      webUrl: '',
+                      fb: '',
+                      insta: '',
+                      tiktok: '',
+                      linkdin: '',
+                    ));
                   },
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 1.2.h),

@@ -7,7 +7,7 @@ import 'package:ttpdm_admin/controller/utils/alert_box.dart';
 
 
 import '../../../controller/custom_widgets/app_colors.dart';
-import '../../../controller/getx_controllers/add_design_controller.dart';
+import '../../../controller/getx_controllers/get_design_controller.dart';
 
 
 class CampaignDetails  extends StatelessWidget {

@@ -4,14 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
-import 'package:ttpdm_admin/controller/getx_controllers/add_design_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_design_controller.dart';
 
 import '../../../controller/custom_widgets/app_colors.dart';
 import '../../../controller/custom_widgets/custom_text_styles.dart';
 
 class BusinessProfile extends StatelessWidget {
+  final String businessName;
+  final String phoneNumber;
+  final String location;
+  final String targetArea;
+  final String description;
+  final String businessId;
+  final List<String> imagesList;
+  final String logo;
+  final String webUrl;
+  final String fb;
+  final String insta;
+  final String tiktok;
+  final String linkdin;
   BusinessProfile({
-    super.key,
+    super.key, required this.businessName, required this.phoneNumber, required this.location, required this.targetArea, required this.description, required this.businessId, required this.imagesList, required this.logo, required this.webUrl, required this.fb, required this.insta, required this.tiktok, required this.linkdin,
   });
   final AddDesignController addDesignController =
       Get.put(AddDesignController());
@@ -44,23 +57,12 @@ class BusinessProfile extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'Business Profile One',
+         businessName,
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
               color: AppColors.mainColor),
         ),
-        // actions: [
-        //   Padding(
-        //     padding: EdgeInsets.only(right: 1.h),
-        //     child: PopupMenuButton<String>(
-        //       itemBuilder: (BuildContext context) {
-        //         return _buildPopupMenuItems(items);
-        //       },
-        //       icon: const Icon(Icons.more_vert),
-        //     ),
-        //   ),
-        // ],
       ),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -107,14 +109,15 @@ class BusinessProfile extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 4.2.h,
-                        child: Text(
-                          'Logo',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'bold',
-                              fontSize: 20.px,
-                              color: const Color(0xffC3C3C2)),
-                        ),
+                        backgroundImage:NetworkImage(logo),
+                        // child: Text(
+                        //   'Logo',
+                        //   style: TextStyle(
+                        //       fontWeight: FontWeight.w700,
+                        //       fontFamily: 'bold',
+                        //       fontSize: 20.px,
+                        //       color: const Color(0xffC3C3C2)),
+                        // ),
                       ),
                       getVerticalSpace(.8.h),
                       Text(
@@ -140,7 +143,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  'Video gaming',
+                 businessName,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -160,7 +163,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  '03316027450',
+                  phoneNumber,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -180,7 +183,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  'Pakistan',
+                location,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -200,7 +203,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  'Lahore',
+                 targetArea,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -220,7 +223,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  """Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.""",
+                  description,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -248,7 +251,7 @@ class BusinessProfile extends StatelessWidget {
                   height: 30.3.h,
                   child: GridView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: images.length,
+                    itemCount: imagesList.length,
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
@@ -267,6 +270,7 @@ class BusinessProfile extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(1.h),
                               color: AppColors.whiteColor,
+                              image: DecorationImage(image: NetworkImage(imagesList[index],),fit: BoxFit.cover),
                               boxShadow: const [
                                 BoxShadow(
                                   offset: Offset(0, 1),
@@ -276,7 +280,7 @@ class BusinessProfile extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: Image.asset(images[index]),
+
                           ),
                         ],
                       );

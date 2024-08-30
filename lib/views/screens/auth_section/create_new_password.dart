@@ -1,15 +1,37 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 
+import '../../../controller/getx_controllers/create_new_password_controller.dart';
 
-import 'login_screen.dart';
-
-class CreateNewPassword extends StatelessWidget {
+class CreateNewPassword extends StatefulWidget {
   const CreateNewPassword({super.key});
+
+  @override
+  State<CreateNewPassword> createState() => _CreateNewPasswordState();
+}
+
+class _CreateNewPasswordState extends State<CreateNewPassword> {
+  final TextEditingController passwordController = TextEditingController();
+
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  late CreateNewPasswordController createNewPasswordController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    createNewPasswordController = Get.put(CreateNewPasswordController(context));
+     log("user id is that :${ MySharedPreferences.getString(userId)}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +71,7 @@ class CreateNewPassword extends StatelessWidget {
                   ),
                 ),
                 getVerticalSpace(.4.h),
-                customTextFormField(),
+                customTextFormField(controller: passwordController),
                 getVerticalSpace(1.6.h),
                 Align(
                   alignment: Alignment.topLeft,
@@ -60,20 +82,43 @@ class CreateNewPassword extends StatelessWidget {
                   ),
                 ),
                 getVerticalSpace(.4.h),
-                customTextFormField(),
+                customTextFormField(controller: confirmPasswordController),
                 getVerticalSpace(2.4.h),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: customElevatedButton(
-                      title: 'Save ',
+                      title: Text(
+                        'Save ',
+                        style: CustomTextStyles.buttonTextStyle
+                            .copyWith(color: AppColors.whiteColor),
+                      ),
                       bgColor: AppColors.mainColor,
                       onTap: () {
-                        Get.to(()=>const LoginScreen());
+                        if (passwordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Please enter your password")));
+                        } else if (confirmPasswordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Please enter your confirmPassword")));
+                        } else if (passwordController.text !=
+                            confirmPasswordController.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text(
+                                  "password and confirmPassword should not match")));
+                        } else {
+                          createNewPasswordController.createNewPassword(
+                              newPassword: passwordController.text,
+                              confirmPassword: confirmPasswordController.text,
+                              userId: userId);
+                        }
+                        // Get.to(() => LoginScreen());
                       },
                       horizentalPadding: 5.9.h,
                       verticalPadding: 1.2.h),
                 ),
-
               ],
             ),
           ),

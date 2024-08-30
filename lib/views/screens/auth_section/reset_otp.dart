@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
-
-
-import 'login_screen.dart';
-import 'otp_verification.dart';
-
+import 'package:ttpdm_admin/controller/getx_controllers/forget_email_controller.dart';
+import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
 
 class ResetOtpScreen extends StatelessWidget {
-  const ResetOtpScreen({super.key});
-
+   ResetOtpScreen({super.key});
+final TextEditingController emailController=TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final ForgetEmailController forgetEmailController=Get.put(ForgetEmailController(context: context));
     return Scaffold(
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -51,25 +50,44 @@ class ResetOtpScreen extends StatelessWidget {
                   ),
                 ),
                 getVerticalSpace(.4.h),
-                customTextFormField(),
-                getVerticalSpace(2.4.h),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: customElevatedButton(
-                      title: 'Next ',
-                      bgColor: AppColors.mainColor,
-                      onTap: () {
-                        Get.to(() => const OtpVerification(title: 'resetpassword',));
-                      },
-                      horizentalPadding: 5.9.h,
-                      verticalPadding: 1.2.h),
+                customTextFormField(
+                  controller: emailController
                 ),
+                getVerticalSpace(2.4.h),
+            Obx(() =>
+                Row(mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    customElevatedButton(
+                      title: forgetEmailController.isLoading.value == true
+                          ? spinkit
+                          : Text(
+                        'Next ',
+                        style: CustomTextStyles.buttonTextStyle.copyWith(color: AppColors.whiteColor),
+                      ),
+                      onTap: () {
+                        if (emailController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please enter the email')),
+                          );
+                        } else {
+                          forgetEmailController.forgetPassword(
+                            email: emailController.text,
+
+                          );
+                        }
+                      },
+                      bgColor: AppColors.mainColor,
+                      verticalPadding: 1.2.h,
+                      horizentalPadding: 4.8.h,
+                    ),
+                  ],
+                )),
                 getVerticalSpace(1.2.h),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () {
-                      Get.to(() => const LoginScreen());
+                      Get.back();
                     },
                     child: Text("Back to login",
                         style: CustomTextStyles.buttonTextStyle.copyWith(

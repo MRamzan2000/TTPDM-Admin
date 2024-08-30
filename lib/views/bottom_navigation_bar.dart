@@ -162,10 +162,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ),
       body: Obx(
             () => isSelectedIndex.value == 0
-            ?  HomeScreen()
+            ?  const HomeScreen()
             : isSelectedIndex.value == 1
             ?   DesignScreen()
-            :isSelectedIndex.value == 2?   BusinessTabBar():isSelectedIndex.value == 3? CampaignScreen():const SettingScreen(),
+            :isSelectedIndex.value == 2?   const BusinessTabBar():isSelectedIndex.value == 3? CampaignScreen():const SettingScreen(),
       )
     );
   }

@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-import 'controller/custom_widgets/app_colors.dart';
-import 'controller/custom_widgets/custom_text_styles.dart';
-import 'controller/custom_widgets/widgets.dart';
-import 'views/screens/auth_section/login_screen.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
+import 'package:ttpdm_admin/views/screens/auth_section/login_screen.dart';
 
+import 'controller/custom_widgets/app_colors.dart';
+import 'views/bottom_navigation_bar.dart';
+import 'views/screens/super_admin/bottom_bar.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,13 +20,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  void navigateBasedOnLoginStatus() {
+    MySharedPreferences.init().then(
+      (value) {
+        if (MySharedPreferences.getBool(isLoggedInKey)) {
+          if (MySharedPreferences.getString("role") == "mid admin") {
+            Get.off(() => const CustomBottomNavigationBar());
+          } else {
+            Get.off(() => const BottomNavigationBarAdmin());
+          }
+        } else {
+          Get.off(() => LoginScreen());
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 5)).then(
-      (value) => Get.to(() => const LoginScreen()),
-    );
+    navigateBasedOnLoginStatus();
   }
 
   @override
@@ -46,10 +63,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 getVerticalSpace(1.6.h),
                 Text(
                   "TTPDM",
-                  style: CustomTextStyles.onBoardingHeading,
-                ),getVerticalSpace(.8.h),
-                Text(
-                  "Admin Pannal",
                   style: CustomTextStyles.onBoardingHeading,
                 ),
                 getVerticalSpace(8.h),
