@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "591801525051",
+    "project_id": "advyro-33ad7",
+    "storage_bucket": "advyro-33ad7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591801525051:android:63a122330b351ca18e0d1e",
+        "android_client_info": {
+          "package_name": "com.example.ttpdm_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRPyKfVW11jhrY8bvdMQmqrC2UJpEAV1Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

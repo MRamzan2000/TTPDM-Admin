@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -26,8 +28,10 @@ class _SplashScreenState extends State<SplashScreen> {
         if (MySharedPreferences.getBool(isLoggedInKey)) {
           if (MySharedPreferences.getString("role") == "mid admin") {
             Get.off(() => const CustomBottomNavigationBar());
+            log("token is that :${MySharedPreferences.getString(authToken)}");
           } else {
             Get.off(() => const BottomNavigationBarAdmin());
+            log("token is that :${MySharedPreferences.getString(authToken)}");
           }
         } else {
           Get.off(() => LoginScreen());

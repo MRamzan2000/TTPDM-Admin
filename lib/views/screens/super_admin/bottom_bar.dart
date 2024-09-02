@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'package:ttpdm_admin/views/screens/super_admin/admins.dart';
+import 'package:ttpdm_admin/views/screens/super_admin/super_admin_settings.dart';
 
 import '../../../controller/custom_widgets/app_colors.dart';
 import '../../../controller/custom_widgets/custom_text_styles.dart';
 import 'business_approved.dart';
 import 'homescreen_admin.dart';
-import 'tab_bar.dart';
 import 'users.dart';
 class BottomNavigationBarAdmin extends StatelessWidget {
   const BottomNavigationBarAdmin({super.key});
@@ -141,12 +141,12 @@ class BottomNavigationBarAdmin extends StatelessWidget {
                       SizedBox(
                           height: 3.5.h,
                           child: Image(
-                              image: const AssetImage('assets/pngs/bundles.png'),
+                              image: const AssetImage('assets/pngs/setting.png'),
                               color: isSelectedIndex.value == 4
                                   ? AppColors.mainColor
                                   : const Color(0xff999999))),
                       Text(
-                        'Bundles ',
+                        'Settings ',
                         style: CustomTextStyles.buttonTextStyle.copyWith(
                             fontSize: 14.px,
                             color: isSelectedIndex.value == 4
@@ -162,10 +162,11 @@ class BottomNavigationBarAdmin extends StatelessWidget {
         ),
         body: Obx(
               () => isSelectedIndex.value == 0
-              ?  AdminHomeScreen()
+              ?  const AdminHomeScreen()
               : isSelectedIndex.value == 1
-              ?   AdminsScreen()
-              :isSelectedIndex.value == 2?    BusinessApproval():isSelectedIndex.value == 3?   UsersEmail():BundlesTabBar(),
+              ?   const AdminsScreen()
+              :isSelectedIndex.value == 2?    const BusinessApproval():isSelectedIndex.value == 3?   const UsersEmail():
+              const SuperAdminSettingScreen(),
         )
     );
   }

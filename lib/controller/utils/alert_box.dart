@@ -1,13 +1,17 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/admin_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/coins_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_all_plans_controller.dart';
+import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
 import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
 import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 import 'package:ttpdm_admin/views/screens/auth_section/login_screen.dart';
-import 'package:ttpdm_admin/views/screens/super_admin/bottom_bar.dart';
 import 'package:ttpdm_admin/views/screens/mid_admin/businesses.dart';
-import 'package:ttpdm_admin/views/screens/super_admin/tab_bar.dart';
 
 import '../../views/screens/super_admin/business_approved.dart';
 import '../custom_widgets/app_colors.dart';
@@ -109,7 +113,11 @@ void openChooseEditProfile(BuildContext context) {
   );
 }
 
-void openUserEdit(BuildContext context, String userName) {
+void openUserEdit(
+  BuildContext context,
+  String userName,
+  String adminId,
+) {
   RxList namesList = ['Campaign', 'Design Ad', 'Businesses'].obs;
   RxList pngs = [
     'assets/pngs/campaign.png',
@@ -118,6 +126,8 @@ void openUserEdit(BuildContext context, String userName) {
   ].obs;
   RxList indexes = [].obs;
   RxInt selectedIndex = 0.obs;
+  final AdminController adminController =
+      Get.put(AdminController(context: context));
 
   showDialog(
     context: context,
@@ -244,20 +254,30 @@ void openUserEdit(BuildContext context, String userName) {
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Expanded(
-                        child: customElevatedButton(
-                            onTap: () {
-                              Get.to(() => const BottomNavigationBarAdmin());
-                            },
-                            title: Text(
-                              'Save',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: const Color(0xff34C759),
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
+                      Obx(() =>
+                        Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                adminController.updateMidAdminRights(
+                                    adminId: adminId,
+                                    campaignPermission: indexes.contains(0),
+                                    designAdPermission: indexes.contains(1),
+                                    businessesPermission: indexes.contains(2));
+                                // Get.to(() => const BottomNavigationBarAdmin());
+                              },
+                              title: adminController.updateLoading.value
+                                  ? spinkit
+                                  : Text(
+                                      'Save',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
+                              bgColor: const Color(0xff34C759),
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
                       ),
                     ],
                   ),
@@ -271,10 +291,12 @@ void openUserEdit(BuildContext context, String userName) {
   );
 }
 
-void openShareCode(BuildContext context) {
+void openShareCode(BuildContext context,
+    String adminCode) {
   showDialog(
     context: context,
     builder: (context) {
+   final  AdminController adminController=Get.put(AdminController(context: context));
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -317,7 +339,7 @@ void openShareCode(BuildContext context) {
                   ),
                   getVerticalSpace(4.5.h),
                   Text(
-                    '58266',
+                    adminCode,
                     style: TextStyle(
                         color: AppColors.mainColor,
                         fontWeight: FontWeight.w700,
@@ -326,7 +348,11 @@ void openShareCode(BuildContext context) {
                   ),
                   getVerticalSpace(4.h),
                   customElevatedButton(
-                      onTap: () {},
+                      onTap: () {
+                        adminController.shareApp(
+                          adminCode: adminCode
+                        );
+                      },
                       title: Text(
                         'Share',
                         style: CustomTextStyles.buttonTextStyle.copyWith(
@@ -345,7 +371,17 @@ void openShareCode(BuildContext context) {
   );
 }
 
-void openCreateNewPlan(BuildContext context) {
+void openCreateNewPlan(BuildContext context,
+{
+  required String title,
+  required String coinPlanId,
+  required String token
+}
+   ) {
+  final CoinsController coinsController = Get.put(CoinsController(context: context));
+  TextEditingController coinsPriceController=TextEditingController();
+  TextEditingController numberCoinsController=TextEditingController();
+
   showDialog(
     context: context,
     builder: (context) {
@@ -368,7 +404,7 @@ void openCreateNewPlan(BuildContext context) {
                   Align(
                     alignment: Alignment.topCenter,
                     child: Text(
-                      'Create new plan',
+                      title,
                       style: CustomTextStyles.buttonTextStyle.copyWith(
                           color: AppColors.blackColor,
                           fontFamily: 'bold',
@@ -400,6 +436,7 @@ void openCreateNewPlan(BuildContext context) {
                         ],
                         color: AppColors.whiteColor),
                     child: customTextFormField(
+                      controller:numberCoinsController ,
                       bgColor: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(2.h),
                       borderRadius1: BorderRadius.circular(2.h),
@@ -430,6 +467,7 @@ void openCreateNewPlan(BuildContext context) {
                         ],
                         color: AppColors.whiteColor),
                     child: customTextFormField(
+                      controller: coinsPriceController,
                       bgColor: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(2.h),
                       borderRadius1: BorderRadius.circular(2.h),
@@ -440,7 +478,9 @@ void openCreateNewPlan(BuildContext context) {
                     children: [
                       Expanded(
                         child: customElevatedButton(
-                            onTap: () {},
+                            onTap: () {
+                              Get.back();
+                            },
                             title: Text(
                               'Cancel',
                               style: CustomTextStyles.buttonTextStyle.copyWith(
@@ -452,18 +492,49 @@ void openCreateNewPlan(BuildContext context) {
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Expanded(
-                        child: customElevatedButton(
-                            onTap: () {},
-                            title: Text(
-                              'Create',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: AppColors.mainColor,
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
+                      Obx(() =>
+                        Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                if(title=="Update your plan"){
+                                  if(numberCoinsController.text.isEmpty){
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Number of Coins")));
+                                  }else if(coinsPriceController.text.isEmpty){
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Price of Coins")));
+
+                                  }else{
+
+                                    coinsController.updateCoinsPlan(
+                                        token: token,
+                                        numberOfCoins: numberCoinsController.text,
+                                        coinsPrice: coinsPriceController.text,
+                                        coinsPlanId: coinPlanId);
+                                  }
+                                }else{
+                                  if(numberCoinsController.text.isEmpty){
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Number of Coins")));
+                                  }else if(coinsPriceController.text.isEmpty){
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Price of Coins")));
+
+                                  }else{
+                                    coinsController.createNewCoinsPlan(token: token,
+                                        numberOfCoins: numberCoinsController.text,
+                                        coinsPrice: coinsPriceController.text);
+                                  }
+                                }
+
+
+                              },
+                              title:coinsController.coinsLoading.value?spinkit: Text(
+                                title=="Update your plan"?"Update" :  'Create',
+                                style: CustomTextStyles.buttonTextStyle.copyWith(
+                                    color: AppColors.whiteColor,
+                                    fontFamily: 'bold'),
+                              ),
+                              bgColor: AppColors.mainColor,
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
                       ),
                     ],
                   ),
@@ -477,7 +548,18 @@ void openCreateNewPlan(BuildContext context) {
   );
 }
 
-void openSubscription(BuildContext context) {
+void openSubscription(BuildContext context,
+{
+  required title,
+  required price,
+  required businessLimit,
+  required subPlanId,
+  required token,
+}
+    ) {
+ final AllPlansController  allPlansController = Get.put(AllPlansController(context: context));
+final TextEditingController priceController=TextEditingController();
+final TextEditingController businessLimitController=TextEditingController();
   showDialog(
     context: context,
     builder: (context) {
@@ -500,7 +582,7 @@ void openSubscription(BuildContext context) {
                   Align(
                     alignment: Alignment.topCenter,
                     child: Text(
-                      'Basic',
+                      title,
                       style: CustomTextStyles.buttonTextStyle.copyWith(
                           color: AppColors.blackColor,
                           fontFamily: 'bold',
@@ -532,6 +614,8 @@ void openSubscription(BuildContext context) {
                         ],
                         color: AppColors.whiteColor),
                     child: customTextFormField(
+                      title: "$price",
+                      controller: priceController,
                       bgColor: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(2.h),
                       borderRadius1: BorderRadius.circular(2.h),
@@ -541,7 +625,7 @@ void openSubscription(BuildContext context) {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Plan Details',
+                      'Business Limit',
                       style: TextStyle(
                           fontSize: 14.px,
                           fontFamily: 'regular',
@@ -562,7 +646,10 @@ void openSubscription(BuildContext context) {
                         ],
                         color: AppColors.whiteColor),
                     child: customTextFormField(
-                      maxLine: 3,
+                      title: "$businessLimit",
+                      keyboardType: TextInputType.number,
+                      controller: businessLimitController,
+                      maxLines: 3,
                       bgColor: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(2.h),
                       borderRadius1: BorderRadius.circular(2.h),
@@ -587,20 +674,37 @@ void openSubscription(BuildContext context) {
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Expanded(
-                        child: customElevatedButton(
-                            onTap: () {
-                              Get.to(() => BundlesTabBar());
-                            },
-                            title: Text(
-                              'Save',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: const Color(0xff34C759),
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
+                      Obx(() =>
+                    Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                if(priceController.text.isEmpty){
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter price of plan")))  ;
+                                }
+                                else if(businessLimitController.text.isEmpty){
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Business Limit of plan")))  ;
+
+                                }else{
+                                  allPlansController.updateSubPlan(
+                                      name: title,
+                                      token: token,
+                                      price: priceController.text,
+                                      businessLimit: businessLimitController.text,
+                                      subPlanId: subPlanId);
+                                }
+                                // Get.to(() => const BundlesTabBar());
+                              },
+                              title:allPlansController.subplanLoading.value?spinkit:
+                              Text(
+                                'Save',
+                                style: CustomTextStyles.buttonTextStyle.copyWith(
+                                    color: AppColors.whiteColor,
+                                    fontFamily: 'bold'),
+                              ),
+                              bgColor: const Color(0xff34C759),
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
                       ),
                     ],
                   ),

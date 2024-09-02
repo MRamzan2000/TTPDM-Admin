@@ -4,13 +4,31 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_design_request_controller.dart';
 
-import 'business_profile_detail.dart';
 
-class DesignScreen extends StatelessWidget {
-  DesignScreen({super.key});
+class DesignScreen extends StatefulWidget {
+  const DesignScreen({super.key});
+
+  @override
+  State<DesignScreen> createState() => _DesignScreenState();
+}
+
+class _DesignScreenState extends State<DesignScreen> {
   final RxList<String>profilesList=<String>['Business Profile One','Business Profile Two',
     'Business Profile Three'].obs;
+
+  late DesignRequestController designRequestController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    designRequestController = Get.put(DesignRequestController());
+    designRequestController.fetchDesignRequest(
+        loading: designRequestController.getDesignRequest.isEmpty);
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(

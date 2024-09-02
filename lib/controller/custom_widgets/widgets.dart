@@ -44,31 +44,32 @@ Widget customElevatedButton(
     Color? titleColor}) {
   return ElevatedButton(
     onPressed: onTap,
-    style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(bgColor)),
+    style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(bgColor)),
     child: Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: horizentalPadding ?? 6.h,
-          vertical: verticalPadding ?? 1.h),
-      child:title
-    ),
+        padding: EdgeInsets.symmetric(
+            horizontal: horizentalPadding ?? 6.h,
+            vertical: verticalPadding ?? 1.h),
+        child: title),
   );
 }
 
 //CustomTextFormField
-
-Widget customTextFormField(
-    {String? title,
-    TextEditingController? controller,
-    TextInputType? keyboardType,
-    int? maxLine,
-    String? errorText,
-    Color? focusBorderColor,
-    Color? bgColor,
-    Color? borderColor,
-    BorderRadius? borderRadius,
-    BorderRadius? borderRadius1}) {
+Widget customTextFormField({
+  String? title,
+  TextEditingController? controller,
+  TextInputType? keyboardType,
+  int? maxLines = 1, // Set default to 1 for single-line input
+  int? minLines = 1, // Ensure a minimum number of lines
+  String? errorText,
+  Color? focusBorderColor,
+  Color? bgColor,
+  Color? borderColor,
+  BorderRadius? borderRadius,
+  BorderRadius? borderRadius1,
+}) {
   return TextFormField(
-    maxLines: maxLine,
+    minLines: minLines,
+    maxLines: maxLines,
     keyboardType: keyboardType,
     controller: controller,
     decoration: InputDecoration(

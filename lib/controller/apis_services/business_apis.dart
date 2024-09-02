@@ -6,7 +6,7 @@ import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
 import 'package:ttpdm_admin/models/get_all_businesses_model.dart';
 import 'package:ttpdm_admin/models/get_business_by_status_model.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:ttpdm_admin/models/get_business_manage_request_model.dart';
 
 class BusinessApis {
   //GetBusiness Profile
@@ -34,9 +34,11 @@ class BusinessApis {
       return null;
     }
   }
+
   //Get All Business
-  Future<GetAllBusinessModel?> getAllBusiness(
-      {required BuildContext context, }) async {
+  Future<GetAllBusinessModel?> getAllBusiness({
+    required BuildContext context,
+  }) async {
     final url = Uri.parse("$baseUrl/$getAllBusinessEp");
     log("url :$url");
     final headers = {
@@ -50,6 +52,28 @@ class BusinessApis {
       if (response.statusCode == 200) {
         log("jsonBody:${jsonDecode(response.body)}");
         return getAllBusinessModelFromJson(jsonDecode(response.body));
+      } else {
+        log('Error fetching businesses: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      log('UnExpected Error fetching businesses: ${e.toString()}');
+      return null;
+    }
+  }
+
+  //Get Business Manage Request Api
+  Future<GetBusinessManageRequestModel?>
+      getBusinessManageRequestApiMethod() async {
+    final url = Uri.parse("$baseUrl/$businessManageRequestEP");
+    final headers = {"Content-Type": "application/json"};
+    try {
+      final response = await http.get(url, headers: headers);
+      log("before jsonBody:${response.body}");
+      log("before jsonBody:${response.statusCode}");
+      if (response.statusCode == 200) {
+        log("jsonBody:${jsonDecode(response.body)}");
+        return getBusinessManageRequestModelFromJson(response.body);
       } else {
         log('Error fetching businesses: ${response.body}');
         return null;

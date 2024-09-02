@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -10,6 +8,7 @@ import '../../../controller/custom_widgets/app_colors.dart';
 import '../../../controller/custom_widgets/custom_text_styles.dart';
 
 class BusinessProfile extends StatelessWidget {
+  final String title;
   final String businessName;
   final String phoneNumber;
   final String location;
@@ -24,7 +23,20 @@ class BusinessProfile extends StatelessWidget {
   final String tiktok;
   final String linkdin;
   BusinessProfile({
-    super.key, required this.businessName, required this.phoneNumber, required this.location, required this.targetArea, required this.description, required this.businessId, required this.imagesList, required this.logo, required this.webUrl, required this.fb, required this.insta, required this.tiktok, required this.linkdin,
+    super.key,
+    required this.businessName,
+    required this.phoneNumber,
+    required this.location,
+    required this.targetArea,
+    required this.description,
+    required this.businessId,
+    required this.imagesList,
+    required this.logo,
+    required this.webUrl,
+    required this.fb,
+    required this.insta,
+    required this.tiktok,
+    required this.linkdin, required this.title,
   });
   final AddDesignController addDesignController =
       Get.put(AddDesignController());
@@ -33,14 +45,6 @@ class BusinessProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final List<String> images = [
-      'assets/pngs/itemfive.png',
-      'assets/pngs/itemfour.png',
-      'assets/pngs/itemthree.png',
-      'assets/pngs/itemtwo.png'
-    ];
-
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -57,7 +61,7 @@ class BusinessProfile extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-         businessName,
+          businessName,
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -73,34 +77,34 @@ class BusinessProfile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getVerticalSpace(2.4.h),
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.6.h, vertical: 2.0.h),
-                  decoration: BoxDecoration(
-                    color: AppColors.whiteColor,
-                    borderRadius: BorderRadius.circular(1.h),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Business Profile Details',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'bold',
-                          fontSize: 14.px,
-                          color: const Color(0xff282827),
-                        ),
-                      ),
-                      Icon(
-                        Icons.keyboard_arrow_up,
-                        size: 2.6.h,
-                        color: const Color(0xff191918),
-                      )
-                    ],
-                  ),
-                ),
+                getVerticalSpace(2.h),
+                // Container(
+                //   padding:
+                //       EdgeInsets.symmetric(horizontal: 1.6.h, vertical: 2.0.h),
+                //   decoration: BoxDecoration(
+                //     color: AppColors.whiteColor,
+                //     borderRadius: BorderRadius.circular(1.h),
+                //   ),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text(
+                //         'Business Profile Details',
+                //         style: TextStyle(
+                //           fontWeight: FontWeight.w500,
+                //           fontFamily: 'bold',
+                //           fontSize: 14.px,
+                //           color: const Color(0xff282827),
+                //         ),
+                //       ),
+                //       Icon(
+                //         Icons.keyboard_arrow_up,
+                //         size: 2.6.h,
+                //         color: const Color(0xff191918),
+                //       )
+                //     ],
+                //   ),
+                // ),
                 getVerticalSpace(1.6.h),
                 Align(
                   alignment: Alignment.topCenter,
@@ -109,7 +113,7 @@ class BusinessProfile extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 4.2.h,
-                        backgroundImage:NetworkImage(logo),
+                        backgroundImage: NetworkImage(logo),
                         // child: Text(
                         //   'Logo',
                         //   style: TextStyle(
@@ -143,7 +147,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                 businessName,
+                  businessName,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -183,7 +187,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                location,
+                  location,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -203,7 +207,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                 targetArea,
+                  targetArea,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -247,40 +251,35 @@ class BusinessProfile extends StatelessWidget {
                   ],
                 ),
                 getVerticalSpace(1.2.h),
-                SizedBox(
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2.h),
+                      color: AppColors.baseColor),
                   height: 30.3.h,
                   child: GridView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: imagesList.length,
-                    physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      mainAxisSpacing: 2.1.h,
-                      crossAxisSpacing: 1.6.h,
+                      mainAxisSpacing: 2.h,
+                      crossAxisSpacing: 3.w,
                     ),
                     itemBuilder: (context, index) {
                       return Stack(
                         children: [
                           Container(
                             alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: .5.h, vertical: .5.h),
                             height: 11.3.h,
-                            width: 11.6.h,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(1.h),
                               color: AppColors.whiteColor,
-                              image: DecorationImage(image: NetworkImage(imagesList[index],),fit: BoxFit.cover),
-                              boxShadow: const [
-                                BoxShadow(
-                                  offset: Offset(0, 1),
-                                  spreadRadius: 0,
-                                  blurRadius: 8,
-                                  color: Color(0xffFFE4EA),
-                                ),
-                              ],
+                              image: DecorationImage(
+                                  image: NetworkImage(
+                                    imagesList[index],
+                                  ),
+                                  fit: BoxFit.cover),
                             ),
-
                           ),
                         ],
                       );
@@ -298,83 +297,6 @@ class BusinessProfile extends StatelessWidget {
                   ),
                 ),
                 getVerticalSpace(1.6.h),
-                // Obx(
-                //   () {
-                //     return addDesignController.pickedMediaList.isEmpty
-                //         ? const SizedBox.shrink()
-                //         : SizedBox(
-                //             height: 30.3.h,
-                //             child: GridView.builder(
-                //               padding: EdgeInsets.zero,
-                //               itemCount:
-                //                   addDesignController.pickedMediaList.length,
-                //               physics: const NeverScrollableScrollPhysics(),
-                //               gridDelegate:
-                //                   SliverGridDelegateWithFixedCrossAxisCount(
-                //                 crossAxisCount: 3,
-                //                 mainAxisSpacing: 2.1.h,
-                //                 crossAxisSpacing: 1.6.h,
-                //               ),
-                //               itemBuilder: (context, index) {
-                //                 return Stack(
-                //                   children: [
-                //                     Container(
-                //                       alignment: Alignment.center,
-                //                       padding: EdgeInsets.symmetric(
-                //                           horizontal: .5.h, vertical: .5.h),
-                //                       height: 11.3.h,
-                //                       width: 11.6.h,
-                //                       decoration: BoxDecoration(
-                //                         borderRadius:
-                //                             BorderRadius.circular(1.h),
-                //                         color: AppColors.whiteColor,
-                //                         boxShadow: const [
-                //                           BoxShadow(
-                //                             offset: Offset(0, 1),
-                //                             spreadRadius: 0,
-                //                             blurRadius: 8,
-                //                             color: Color(0xffFFE4EA),
-                //                           ),
-                //                         ],
-                //                       ),
-                //                       child: ClipRRect(
-                //                         borderRadius:
-                //                             BorderRadius.circular(1.h),
-                //                         child: Image.file(
-                //                           File(addDesignController
-                //                               .pickedMediaList[index]['path']!),
-                //                           fit: BoxFit.cover,
-                //                           height: 11.3.h,
-                //                           width: 11.6.h,
-                //                         ),
-                //                       ),
-                //                     ),
-                //                     Positioned(
-                //                       top: 1.h,
-                //                       right: 3.h,
-                //                       child: GestureDetector(
-                //                         onTapDown: (TapDownDetails details) {
-                //                           _showPopupMenu(context,
-                //                               details.globalPosition, index);
-                //                         },
-                //                         child: SizedBox(
-                //                           height: 2.5.h,
-                //                           width: 2.5.h,
-                //                           child: Icon(
-                //                             Icons.more_vert,
-                //                             color: AppColors.mainColor,
-                //                             size: 3.5.h,
-                //                           ),
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ],
-                //                 );
-                //               },
-                //             ),
-                //           );
-                //   },
-                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -443,24 +365,24 @@ class BusinessProfile extends StatelessWidget {
                                       'assets/pngs/uploaddesign2.png'))),
                         ),
                         Positioned(
-                                                top: 1.h,
-                                                right: 2.h,
-                                                child: GestureDetector(
-                                                  onTapDown: (TapDownDetails details) {
-                                                    _showPopupMenu(context,
-                                                        details.globalPosition, 1);
-                                                  },
-                                                  child: SizedBox(
-                                                    height: 2.5.h,
-                                                    width: 2.5.h,
-                                                    child: Icon(
-                                                      Icons.more_vert,
-                                                      color: AppColors.mainColor,
-                                                      size: 3.5.h,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
+                          top: 1.h,
+                          right: 2.h,
+                          child: GestureDetector(
+                            onTapDown: (TapDownDetails details) {
+                              _showPopupMenu(
+                                  context, details.globalPosition, 1);
+                            },
+                            child: SizedBox(
+                              height: 2.5.h,
+                              width: 2.5.h,
+                              child: Icon(
+                                Icons.more_vert,
+                                color: AppColors.mainColor,
+                                size: 3.5.h,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     Stack(
@@ -487,24 +409,24 @@ class BusinessProfile extends StatelessWidget {
                                       'assets/pngs/uploaddesign3.png'))),
                         ),
                         Positioned(
-                                                top: 1.h,
-                                                right: 2.h,
-                                                child: GestureDetector(
-                                                  onTapDown: (TapDownDetails details) {
-                                                    _showPopupMenu(context,
-                                                        details.globalPosition, 2);
-                                                  },
-                                                  child: SizedBox(
-                                                    height: 2.5.h,
-                                                    width: 2.5.h,
-                                                    child: Icon(
-                                                      Icons.more_vert,
-                                                      color: AppColors.mainColor,
-                                                      size: 3.5.h,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
+                          top: 1.h,
+                          right: 2.h,
+                          child: GestureDetector(
+                            onTapDown: (TapDownDetails details) {
+                              _showPopupMenu(
+                                  context, details.globalPosition, 2);
+                            },
+                            child: SizedBox(
+                              height: 2.5.h,
+                              width: 2.5.h,
+                              child: Icon(
+                                Icons.more_vert,
+                                color: AppColors.mainColor,
+                                size: 3.5.h,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -566,7 +488,31 @@ class BusinessProfile extends StatelessWidget {
                     ],
                   ),
                 ),
-                getVerticalSpace(4.h)
+                getVerticalSpace(2.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: customElevatedButton(
+                          horizentalPadding: 0,
+                          title: Text(
+                            "Reject",
+                            style: CustomTextStyles.buttonTextStyle,
+                          ),
+                          bgColor: const Color(0xff999999)),
+                    ),
+                    getHorizentalSpace(1.8.h),
+                    Expanded(
+                      child: customElevatedButton(
+                          horizentalPadding: 0,
+                          title: Text(
+                            "Approve",
+                            style: CustomTextStyles.buttonTextStyle,
+                          ),
+                          bgColor: AppColors.mainColor),
+                    )
+                  ],
+                ),
+                getVerticalSpace(3.h),
               ],
             ),
           ),

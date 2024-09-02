@@ -11,6 +11,7 @@ class SignUpController extends GetxController {
     required String fullName,
     required String email,
     required String phoneNumber,
+    required String adminCode,
     required String password,
     required String confirmPassword,
     required String role,
@@ -18,13 +19,13 @@ class SignUpController extends GetxController {
     try {
       isLoading.value = true;
       await AuthApis(context: context)
-          .signUPApis(
+          .midAdminSignUPApis(
           fullName: fullName,
           email: email,
           phoneNumber: phoneNumber,
           password: password,
           confirmPassword: confirmPassword,
-          role: role)
+          role: role, adminCode:adminCode )
           .then(
             (value) {
           return isLoading.value = false;

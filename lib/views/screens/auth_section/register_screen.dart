@@ -11,6 +11,7 @@ class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneNumber = TextEditingController();
+  final TextEditingController adminCodeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -90,6 +91,19 @@ class RegisterScreen extends StatelessWidget {
                       keyboardType: TextInputType.phone),
                   getVerticalSpace(1.6.h),
                   Text(
+                    'Admin code',
+                    style: TextStyle(
+                        color: AppColors.blackColor,
+                        fontSize: 14.px,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'regular'),
+                  ),
+                  getVerticalSpace(.4.h),
+                  customTextFormField(
+                      controller: adminCodeController,
+                      keyboardType: TextInputType.phone),
+                  getVerticalSpace(1.6.h),
+                  Text(
                     'Enter Password',
                     style: TextStyle(
                         color: AppColors.blackColor,
@@ -114,48 +128,7 @@ class RegisterScreen extends StatelessWidget {
                   customTextFormField(
                       controller: confirmPasswordController,
                       keyboardType: TextInputType.visiblePassword),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Mid admin  ",
-                            style: CustomTextStyles.buttonTextStyle.copyWith(
-                                color: AppColors.mainColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14.px),
-                          ),
-                          Checkbox(
-                              value: midAdmin.value,
-                              activeColor: Colors.green,
-                              onChanged: (value) {
-                                midAdmin.value = value!;
-                                superAdmin.value = !value;
-                              }),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Super admin",
-                            style: CustomTextStyles.buttonTextStyle.copyWith(
-                                color: AppColors.mainColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14.px),
-                          ),
-                          Checkbox(
-                              value: superAdmin.value,
-                              activeColor: Colors.green,
-                              onChanged: (value) {
-                                superAdmin.value =   value!;
-                                midAdmin.value =   !value;
-                              }),
-                        ],
-                      )
-                    ],
-                  ),
+                  getVerticalSpace(1.5.h),
                   Container(
                     width: 24.2.h,
                     height: 6.2.h,
@@ -232,9 +205,9 @@ class RegisterScreen extends StatelessWidget {
                                 phoneNumber: phoneNumber.text,
                                 password: passwordController.text,
                                 confirmPassword: confirmPasswordController.text,
-                                role: midAdmin.value
-                                    ? "mid admin"
-                                    : "super admin",
+                                role:
+                                    "mid admin", adminCode: adminCodeController.text
+
                               );
                             }
                           },

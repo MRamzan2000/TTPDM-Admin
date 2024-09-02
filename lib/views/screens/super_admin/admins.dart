@@ -1,19 +1,45 @@
+
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/admin_controller.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 
 import '../../../controller/utils/alert_box.dart';
 
-class AdminsScreen extends StatelessWidget {
-  AdminsScreen({super.key});
-  final RxList<String> profilesList = <String>['Mohsin', 'Ali', 'Raza'].obs;
+class AdminsScreen extends StatefulWidget {
+  const AdminsScreen({super.key});
+
+  @override
+  State<AdminsScreen> createState() => _AdminsScreenState();
+}
+
+class _AdminsScreenState extends State<AdminsScreen> {
   final List<String> items = [
     'Edit',
     'Delete',
   ];
+
+  late AdminController adminController;
+RxString token="".obs;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    adminController = Get.put(AdminController(context: context));
+    adminController.fetchAllMidAdmins(
+        loading: adminController.allMidAdmins.isEmpty);
+    token.value=MySharedPreferences.getString(authToken);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,98 +55,179 @@ class AdminsScreen extends StatelessWidget {
               color: AppColors.mainColor),
         ),
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              getVerticalSpace(2.4.h),
-              ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: profilesList.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      // Get.to(()=> BusinessProfile());
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 1.6.h, vertical: 2.0.h),
-                      decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(1.h)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            profilesList[index],
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'bold',
-                                fontSize: 14.px,
-                                color: const Color(0xff282827)),
+      body: Obx(
+        () => SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.4.h),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getVerticalSpace(2.4.h),
+                  adminController.isLoading.value
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            return Shimmer.fromColors(
+                              baseColor: AppColors.baseColor,
+                              highlightColor: AppColors.highlightColor,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 1.2.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 1.6.h, vertical: 2.0.h),
+                                decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(1.h)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      "",
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          right: 1.h, bottom: 2.h),
+                                      height: 3.h,
+                                      width: 3.h,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : adminController.allMidAdmins.isEmpty
+                          ? Center(
+                              child: Text(
+                                "No Users Found",
+                                style: TextStyle(
+                                  fontSize: 18.px,
+                                  color: AppColors.mainColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'bold',
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.zero,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: adminController.allMidAdmins.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: EdgeInsets.symmetric(vertical: .8.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 1.6.h, vertical: .8.h),
+                                decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(1.h)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      adminController
+                                          .allMidAdmins[index]!.fullname,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'bold',
+                                          fontSize: 14.px,
+                                          color: const Color(0xff282827)),
+                                    ),
+                                    PopupMenuButton<String>(
+                                      itemBuilder: (BuildContext context) {
+                                        return _buildPopupMenuItems(items);
+                                      },
+                                      onSelected: (String value) {
+                                        if (value == 'Edit') {
+                                          openUserEdit(
+                                              context,
+                                              adminController
+                                                  .allMidAdmins[index]!
+                                                  .fullname,
+                                              adminController
+                                                  .allMidAdmins[index]!
+                                                  .id
+                                          );
+                                        }
+                                      },
+                                      icon:  Icon(Icons.more_vert,
+                                      size: 3.5.h,),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                          Container(
-                            margin: EdgeInsets.only(right: 1.h, bottom: 2.h),
-                            height: 3.h,
-                            width: 3.h,
-                            child: PopupMenuButton<String>(
-                              itemBuilder: (BuildContext context) {
-                                return _buildPopupMenuItems(items);
+                  getVerticalSpace(1.6.h),
+                  adminController.isLoading.value
+                      ? Shimmer.fromColors(
+                          baseColor: AppColors.baseColor,
+                          highlightColor: AppColors.highlightColor,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 1.6.h, vertical: 2.0.h),
+                            decoration: BoxDecoration(
+                                color: AppColors.whiteColor,
+                                borderRadius: BorderRadius.circular(1.h)),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            adminController.fetchAdminCode(token: token.value, loading: adminController.adminCode.value == null)
+                                .then((_) {
+                              log("admin code :${adminController.adminCode.value!.adminCode.code}");
 
-                              },
-                              onSelected: (String value) {
-                                if(value=='Edit'){
-                                  openUserEdit(context,profilesList[index]);
-                                }
-                              },
-                              icon: const Icon(Icons.more_vert),
+                              if (adminController.adminCode.value != null) {
+                                openShareCode(context, adminController.adminCode.value!.adminCode.code.toString());
+                              } else {
+                                log("Admin code is null or not fetched yet");
+                              }
+                            });
+
+
+
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 1.6.h, vertical: 2.0.h),
+                            decoration: BoxDecoration(
+                                color: AppColors.whiteColor,
+                                borderRadius: BorderRadius.circular(1.h)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add,
+                                  size: 20,
+                                  color: AppColors.mainColor,
+                                ),
+                                Text(
+                                  'Add New Admin',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'bold',
+                                      fontSize: 14.px,
+                                      color: AppColors.mainColor),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                        ),
+                  getVerticalSpace(9.h)
+                ],
               ),
-              getVerticalSpace(1.6.h),
-              GestureDetector(onTap: (){
-                openShareCode(context);
-              },
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 1.6.h, vertical: 2.0.h),
-                  decoration: BoxDecoration(
-                      color: AppColors.whiteColor,
-                      borderRadius: BorderRadius.circular(1.h)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add,
-                        size: 20,
-                        color: AppColors.mainColor,
-                      ),
-                      Text(
-                        'Add New Admin',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'bold',
-                            fontSize: 14.px,
-                            color: AppColors.mainColor),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),
@@ -138,7 +245,6 @@ class AdminsScreen extends StatelessWidget {
             children: [
               Text(items[i]),
               if (i < items.length - 1) const Divider(thickness: 1),
-
             ],
           ),
         ),

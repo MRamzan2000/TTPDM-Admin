@@ -8,6 +8,9 @@ import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_business_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_design_request_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/user_profile_controller.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 
 import 'business_profile_detail.dart';
 
@@ -32,16 +35,25 @@ class _HomeScreenState extends State<HomeScreen> {
   ].obs;
   late DesignRequestController designRequestController;
   late GetBusinessController getBusinessController;
+  late UserProfileController userProfileController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getBusinessController = Get.put(GetBusinessController(context: context));
     designRequestController = Get.put(DesignRequestController());
+    userProfileController = Get.put(UserProfileController(context: context));
+
+    String id = MySharedPreferences.getString(userId);
     designRequestController.fetchDesignRequest(
         loading: designRequestController.getDesignRequest.isEmpty);
-    getBusinessController=Get.put(GetBusinessController(context: context));
-    getBusinessController.fetchBusinessByStatus(context: context, isLoad: getBusinessController.pendingBusiness.value ==null, status: 'pending');
+    userProfileController.fetchUserProfile(
+        loading: userProfileController.userProfile.value == null, id: id);
+    getBusinessController.fetchBusinessByStatus(
+        context: context,
+        isLoad: getBusinessController.pendingBusiness.value == null,
+        status: 'pending');
   }
 
   @override
@@ -68,36 +80,90 @@ class _HomeScreenState extends State<HomeScreen> {
             () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    radius: 2.8.h,
-                    backgroundImage:
-                        const AssetImage('assets/pngs/profile.png'),
-                  ),
-                  title: Text(
-                    'Hello Mid Admin',
-                    style: TextStyle(
-                        fontFamily: 'bold',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18.px,
-                        color: const Color(0xff2F3542)),
-                  ),
-                  subtitle: Text('Welcome Back',
-                      style: TextStyle(
-                          fontFamily: 'light',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12.px,
-                          color: const Color(0xff2F3542))),
-                  trailing: GestureDetector(
-                    onTap: () {},
-                    child: SizedBox(
-                        height: 4.8.h,
-                        width: 4.8.h,
-                        child:
-                            svgImage('assets/svgs/midadminnotification.svg')),
-                  ),
-                ),
+                userProfileController.isLoading.value
+                    ? Shimmer.fromColors(
+                        highlightColor: AppColors.highlightColor,
+                        baseColor: AppColors.baseColor,
+                        child: SizedBox(
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              radius: 2.8.h,
+                            ),
+                            title: const Text(
+                              '',
+                            ),
+                            subtitle: const Text(
+                              '',
+                            ),
+                            trailing: SizedBox(
+                              height: 4.8.h,
+                              width: 4.8.h,
+                            ),
+                          ),
+                        ),
+                      )
+                    : userProfileController.userProfile.value == null
+                        ? ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              radius: 2.8.h,
+                              backgroundImage:
+                                  const AssetImage('assets/pngs/profile.png'),
+                            ),
+                            title: Text(
+                              'Hello Mid Admin',
+                              style: TextStyle(
+                                  fontFamily: 'bold',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18.px,
+                                  color: const Color(0xff2F3542)),
+                            ),
+                            subtitle: Text('Welcome Back',
+                                style: TextStyle(
+                                    fontFamily: 'light',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12.px,
+                                    color: const Color(0xff2F3542))),
+                            trailing: GestureDetector(
+                              onTap: () {},
+                              child: SizedBox(
+                                  height: 4.8.h,
+                                  width: 4.8.h,
+                                  child: svgImage(
+                                      'assets/svgs/midadminnotification.svg')),
+                            ),
+                          )
+                        : ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              radius: 2.8.h,
+                              backgroundImage:
+                                  const AssetImage('assets/pngs/profile.png'),
+                            ),
+                            title: Text(
+                              userProfileController.userProfile.value!.fullname,
+                              style: TextStyle(
+                                  fontFamily: 'bold',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 18.px,
+                                  color: const Color(0xff2F3542)),
+                            ),
+                            subtitle: Text('Welcome Back',
+                                style: TextStyle(
+                                    fontFamily: 'light',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 12.px,
+                                    color: const Color(0xff2F3542))),
+                            trailing: GestureDetector(
+                              onTap: () {},
+                              child: SizedBox(
+                                  height: 4.8.h,
+                                  width: 4.8.h,
+                                  child: svgImage(
+                                      'assets/svgs/midadminnotification.svg')),
+                            ),
+                          ),
                 getVerticalSpace(1.h),
                 Text(
                   'Request Designs',
@@ -163,38 +229,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .getDesignRequest.length,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
-                                return Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: index == 0 ? 0 : .8.h),
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 1.6.h, horizontal: .8.h),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.whiteColor,
-                                    borderRadius: BorderRadius.circular(1.h),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                          height: 5.6.h,
-                                          width: 5.6.h,
-                                          child: const Image(
-                                            image: AssetImage(
-                                                'assets/pngs/designpng.png'),
-                                            fit: BoxFit.cover,
-                                          )),
-                                      getVerticalSpace(.8.h),
-                                      Text(
-                                        designRequestController
-                                            .getDesignRequest[index]!
-                                            .user
-                                            .fullname,
-                                        style: TextStyle(
-                                            fontSize: 12.px,
-                                            color: const Color(0xff191918),
-                                            fontFamily: 'bold',
-                                            fontWeight: FontWeight.w600),
-                                      )
-                                    ],
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Get.to(() => BusinessProfile(
+                                    //   businessName: getBusinessController.pendingBusiness.value!.businesses[index].name,
+                                    //   phoneNumber:  getBusinessController.pendingBusiness.value!.businesses[index].phone,
+                                    //   location:  getBusinessController.pendingBusiness.value!.businesses[index].location,
+                                    //   targetArea:  getBusinessController.pendingBusiness.value!.businesses[index].targetMapArea,
+                                    //   description:  getBusinessController.pendingBusiness.value!.businesses[index].description,
+                                    //   businessId:  getBusinessController.pendingBusiness.value!.businesses[index].id,
+                                    //   imagesList:  getBusinessController.pendingBusiness.value!.businesses[index].gallery,
+                                    //   logo:  getBusinessController.pendingBusiness.value!.businesses[index].logo,
+                                    //
+                                    //   webUrl:  getBusinessController.pendingBusiness.value!.businesses[index].websiteUrl,
+                                    //   fb:  getBusinessController.pendingBusiness.value!.businesses[index].facebookUrl,
+                                    //   insta:  getBusinessController.pendingBusiness.value!.businesses[index].instagramUrl,
+                                    //   tiktok:  getBusinessController.pendingBusiness.value!.businesses[index].tiktokUrl,
+                                    //   linkdin:  getBusinessController.pendingBusiness.value!.businesses[index].linkedinUrl,
+                                    //   title: 'new',
+                                    //
+                                    // ));
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: index == 0 ? 0 : .8.h),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 1.6.h, horizontal: .8.h),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.whiteColor,
+                                      borderRadius: BorderRadius.circular(1.h),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                            height: 5.6.h,
+                                            width: 5.6.h,
+                                            child: const Image(
+                                              image: AssetImage(
+                                                  'assets/pngs/designpng.png'),
+                                              fit: BoxFit.cover,
+                                            )),
+                                        getVerticalSpace(.8.h),
+                                        Text(
+                                          designRequestController
+                                              .getDesignRequest[index]!
+                                              .user
+                                              .fullname,
+                                          style: TextStyle(
+                                              fontSize: 12.px,
+                                              color: const Color(0xff191918),
+                                              fontFamily: 'bold',
+                                              fontWeight: FontWeight.w600),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -210,129 +298,191 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: const Color(0xff191918)),
                 ),
                 getVerticalSpace(1.2.h),
-                getBusinessController.isLoading.value?ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  itemCount: profilesList.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 1.6.h, vertical: 2.0.h),
-                      decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(1.h)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                  height: 2.h,
-                                  width: 2.h,
-                                 ),
-                              getHorizentalSpace(1.h),
-
-                            ],
-                          ),
-                          const Expanded(child: SizedBox()),
-
-
-                        ],
-                      ),
-                    );
-                  },
-                )
-                :getBusinessController.pendingBusiness.value!.businesses.isEmpty&&getBusinessController.approvedBusiness.value
-            !.businesses.isEmpty&&getBusinessController.rejectedBusinesses.value!.businesses.isEmpty?
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    "No Businesses",
-                    style: TextStyle(
-                      fontSize: 18.px,
-                      color: AppColors.mainColor,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'bold',
-                    ),
-                  ),
-                ):
-
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    itemCount:getBusinessController.pendingBusiness.value!.businesses.length,
-                  
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Get.to(() => BusinessProfile(
-                            businessName: getBusinessController.pendingBusiness.value!.businesses[index].name,
-                            phoneNumber:  getBusinessController.pendingBusiness.value!.businesses[index].phone,
-                            location:  getBusinessController.pendingBusiness.value!.businesses[index].location,
-                            targetArea:  getBusinessController.pendingBusiness.value!.businesses[index].targetMapArea,
-                            description:  getBusinessController.pendingBusiness.value!.businesses[index].description,
-                            businessId:  getBusinessController.pendingBusiness.value!.businesses[index].id,
-                            imagesList:  getBusinessController.pendingBusiness.value!.businesses[index].gallery,
-                            logo:  getBusinessController.pendingBusiness.value!.businesses[index].logo,
-
-                            webUrl:  getBusinessController.pendingBusiness.value!.businesses[index].websiteUrl,
-                            fb:  getBusinessController.pendingBusiness.value!.businesses[index].facebookUrl,
-                            insta:  getBusinessController.pendingBusiness.value!.businesses[index].instagramUrl,
-                            tiktok:  getBusinessController.pendingBusiness.value!.businesses[index].tiktokUrl,
-                            linkdin:  getBusinessController.pendingBusiness.value!.businesses[index].linkedinUrl,
-
-                          ));
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 1.6.h, vertical: 2.0.h),
-                          decoration: BoxDecoration(
-                              color: AppColors.whiteColor,
-                              borderRadius: BorderRadius.circular(1.h)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
+                getBusinessController.isLoading.value
+                    ? ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: profilesList.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 1.2.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 1.6.h, vertical: 2.0.h),
+                            decoration: BoxDecoration(
+                                color: AppColors.whiteColor,
+                                borderRadius: BorderRadius.circular(1.h)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
                                       height: 2.h,
                                       width: 2.h,
-                                      child:  SvgPicture.asset(svgs[2]) ),
-                                  getHorizentalSpace(1.h),
-                                  Text(
-                                    getBusinessController.pendingBusiness.value!.businesses[index].name,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'bold',
-                                        fontSize: 14.px,
-                                        color: const Color(0xff282827)),
+                                    ),
+                                    getHorizentalSpace(1.h),
+                                  ],
+                                ),
+                                const Expanded(child: SizedBox()),
+                              ],
+                            ),
+                          );
+                        },
+                      )
+                    : getBusinessController
+                                .pendingBusiness.value!.businesses.isEmpty &&
+                            getBusinessController
+                                .approvedBusiness.value!.businesses.isEmpty &&
+                            getBusinessController
+                                .rejectedBusinesses.value!.businesses.isEmpty
+                        ? Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Text(
+                              "No Businesses",
+                              style: TextStyle(
+                                fontSize: 18.px,
+                                color: AppColors.mainColor,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'bold',
+                              ),
+                            ),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              itemCount: getBusinessController
+                                  .pendingBusiness.value!.businesses.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Get.to(() => BusinessProfile(
+                                          businessName: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .name,
+                                          phoneNumber: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .phone,
+                                          location: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .location,
+                                          targetArea: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .targetMapArea,
+                                          description: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .description,
+                                          businessId: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .id,
+                                          imagesList: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .gallery,
+                                          logo: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .logo,
+                                          webUrl: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .websiteUrl,
+                                          fb: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .facebookUrl,
+                                          insta: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .instagramUrl,
+                                          tiktok: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .tiktokUrl,
+                                          linkdin: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .linkedinUrl,
+                                          title: 'new',
+                                        ));
+                                  },
+                                  child: Container(
+                                    margin:
+                                        EdgeInsets.symmetric(vertical: 1.2.h),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 1.6.h, vertical: 2.0.h),
+                                    decoration: BoxDecoration(
+                                        color: AppColors.whiteColor,
+                                        borderRadius:
+                                            BorderRadius.circular(1.h)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                                height: 2.h,
+                                                width: 2.h,
+                                                child:
+                                                    SvgPicture.asset(svgs[2])),
+                                            getHorizentalSpace(1.h),
+                                            Text(
+                                              getBusinessController
+                                                  .pendingBusiness
+                                                  .value!
+                                                  .businesses[index]
+                                                  .name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: 'bold',
+                                                  fontSize: 14.px,
+                                                  color:
+                                                      const Color(0xff282827)),
+                                            ),
+                                          ],
+                                        ),
+                                        const Expanded(child: SizedBox()),
+                                        Text(
+                                          'Managed by Mohsin',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12.px,
+                                              color: AppColors.mainColor,
+                                              fontFamily: 'bold'),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios_sharp,
+                                          size: 2.4.h,
+                                          color: const Color(0xff191918),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
-                              const Expanded(child: SizedBox()),
-                              Text(
-                                'Managed by Mohsin',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12.px,
-                                    color: AppColors.mainColor,
-                                    fontFamily: 'bold'),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_sharp,
-                                size: 2.4.h,
-                                color: const Color(0xff191918),
-                              )
-                            ],
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                getVerticalSpace(8.h)
               ],
             ),
           ),

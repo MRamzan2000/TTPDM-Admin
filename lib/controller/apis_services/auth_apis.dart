@@ -96,7 +96,90 @@ class AuthApis {
       }
     }
   }
+//Mid Admin SignUp
+  Future<void> midAdminSignUPApis({
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    required String adminCode,
+    required String password,
+    required String confirmPassword,
+    required String role,
+  }) async {
+    final url = Uri.parse("$baseUrl/$midAdminSignUpEndP");
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      "fullname": fullName,
+      "email": email,
+      "phoneNumber": phoneNumber,
+      "adminCode": adminCode,
+      "password": password,
+      "confirmPassword": confirmPassword,
+      "role": role,
+    });
 
+    try {
+      Response response = await post(url, body: body, headers: headers);
+
+      // Debug prints
+      log('Response status: ${response.statusCode}');
+      log('Response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User registered successfully')),
+          );
+        }
+        if (context.mounted) {
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) {
+              return OtpVerification(
+                email: email,
+                title: 'signUp',
+              );
+            },
+          ));
+        }
+      } else if (response.statusCode == 400) {
+        Map<String, dynamic> responseBody = jsonDecode(response.body);
+        if (responseBody.containsKey('errors')) {
+          if (context.mounted) {
+            String errorMessage = responseBody['errors'].isNotEmpty
+                ? responseBody['errors'].first['msg']
+                : 'An error occurred';
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(errorMessage)),
+            );
+            log('errorMessage : $errorMessage');
+          }
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content:
+                  Text('An unexpected error occurred: ${response.body}')),
+            );
+            log('errorMessage : ${response.body}');
+          }
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Unexpected status code: ${response.body}')),
+          );
+          log('errorMessage : ${response.body}');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+        log('catch error : ${e.toString()}');
+      }
+    }
+  }
   //Login Api hit
   Future<void> loginApis({
     required email,
@@ -112,6 +195,7 @@ class AuthApis {
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = jsonDecode(response.body);
       MySharedPreferences.setString(authToken, responseBody["token"]);
+      MySharedPreferences.setString(userId, responseBody["user"]["_id"]);
       if (context.mounted) {
         MySharedPreferences.setBool(isLoggedInKey, true);
         ScaffoldMessenger.of(context).showSnackBar(
