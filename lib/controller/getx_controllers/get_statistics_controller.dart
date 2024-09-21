@@ -22,7 +22,7 @@ class GetStatisticsController extends GetxController {
   final RxBool cancellation = false.obs;
   final RxBool returnRate = false.obs;
 
-  RxList<GetStatisticsModel?> statics = <GetStatisticsModel>[].obs;
+  Rxn<GetStatisticsModel?> statics = Rxn<GetStatisticsModel>();
   Future<void> fetchStatistics({required bool loading}) async {
     try {
       statisticsLoading.value = loading;
@@ -32,12 +32,12 @@ class GetStatisticsController extends GetxController {
       if (data != null) {
         statics.value = data;
       } else {
-        statics.value = []; // Handle case when data is null
+        statics.value = null; // Handle case when data is null
       }
       statisticsLoading.value = false;
     } catch (e) {
       log("Unexpected error occurred: ${e.toString()}");
-      statics.value = []; // Handle exceptions
+      statics.value = null; // Handle exceptions
     } finally {
       statisticsLoading.value = false;
     }

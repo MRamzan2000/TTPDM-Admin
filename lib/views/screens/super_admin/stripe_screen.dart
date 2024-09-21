@@ -1,13 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_stripe_key_controller.dart';
 
-class StripeScreen extends StatelessWidget {
-   StripeScreen({super.key});
-final RxBool isEdit=false.obs;
+class StripeScreen extends StatefulWidget {
+  const StripeScreen({super.key});
+
+  @override
+  State<StripeScreen> createState() => _StripeScreenState();
+}
+
+class _StripeScreenState extends State<StripeScreen> {
+  final RxBool isEdit = false.obs;
+  late GetStripeKeyController getStripeKeyController;
+  final TextEditingController stripeController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    getStripeKeyController
+        .fetchStripeKey(loading: getStripeKeyController.stripeKey.value == null)
+        .then(
+      (value) {
+        stripeController.text = getStripeKeyController.stripeKey.toString();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,19 +45,21 @@ final RxBool isEdit=false.obs;
           ),
         ),
         actions: [
-          isEdit.value==true?const SizedBox.shrink() : GestureDetector(
-              onTap: () {
-                isEdit.value=true;
-              },
-              child: Padding(
-                padding:  EdgeInsets.only(right: 3.h),
-                child: Text(
-                  "Edit",
-                  style: CustomTextStyles.buttonTextStyle.copyWith(
-                      color: const Color(0xff007AFF),
-                      fontWeight: FontWeight.bold),
-                ),
-              )),
+          isEdit.value == true
+              ? const SizedBox.shrink()
+              : GestureDetector(
+                  onTap: () {
+                    isEdit.value = true;
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 3.h),
+                    child: Text(
+                      "Edit",
+                      style: CustomTextStyles.buttonTextStyle.copyWith(
+                          color: const Color(0xff007AFF),
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )),
         ],
         backgroundColor: AppColors.whiteColor,
         centerTitle: true,
@@ -53,8 +77,8 @@ final RxBool isEdit=false.obs;
         width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-          child: Obx(() =>
-             Column(
+          child: Obx(
+            () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 getVerticalSpace(6.h),
@@ -64,6 +88,23 @@ final RxBool isEdit=false.obs;
                       color: AppColors.blackColor, fontWeight: FontWeight.bold),
                 ),
                 getVerticalSpace(1.h),
+                getStripeKeyController.keyLoading.value? Shimmer.fromColors(
+                  baseColor: AppColors.baseColor,
+                  highlightColor: AppColors.highlightColor,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4.h),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.blackColor.withOpacity(0.1),
+                            offset: const Offset(0, 2),
+                            blurRadius: 12,
+                            spreadRadius: 0,
+                          )
+                        ]),
+
+                  ),
+                ):
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.h),
@@ -76,19 +117,29 @@ final RxBool isEdit=false.obs;
                         )
                       ]),
                   child: customTextFormField(
-                      title: isEdit.value==true?"pk_test_51PWFAtRsuZrhcR6RkiVOIRrb6Nfhw9f8alHztCUuBZBSaBU6VHzlbpS2E4PaVcQF6VLDI66X5YKjnCJYkVCorioY00cQAyLk2R": "*************",
+                      controller: stripeController,
+                      title: stripeController.text.isEmpty
+                          ? isEdit.value == true
+                              ? "pk_test_51PWFAtRsuZrhcR6RkiVOIRrb6Nfhw9f8alHztCUuBZBSaBU6VHzlbpS2E4PaVcQF6VLDI66X5YKjnCJYkVCorioY00cQAyLk2R"
+                              : "*************"
+                          : stripeController.text,
                       borderRadius: BorderRadius.circular(4.h),
                       bgColor: AppColors.whiteColor),
                 ),
                 getVerticalSpace(3.h),
-                isEdit.value==true? Row(mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    customElevatedButton(
-                        title: Text("Save",style: CustomTextStyles.buttonTextStyle,),
-                      bgColor: AppColors.mainColor
-                    ),
-                  ],
-                ):const SizedBox.shrink()
+                isEdit.value == true
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          customElevatedButton(
+                              title: Text(
+                                "Save",
+                                style: CustomTextStyles.buttonTextStyle,
+                              ),
+                              bgColor: AppColors.mainColor),
+                        ],
+                      )
+                    : const SizedBox.shrink()
               ],
             ),
           ),

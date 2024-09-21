@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class StatisticsApi {
   final BuildContext context;
   StatisticsApi({required this.context});
-  Future<List<GetStatisticsModel>?> getStatisticsApiMethod() async {
+  Future<GetStatisticsModel?> getStatisticsApiMethod() async {
     final url = Uri.parse("$baseUrl/$getStatisticsEp");
     final headers = {
       'Content-Type': 'application/json',

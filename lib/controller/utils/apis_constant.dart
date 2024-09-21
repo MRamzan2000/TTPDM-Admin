@@ -43,6 +43,8 @@ const addAnalysisEp="midAdmin/campaigns/";
 const businessManageRequest="midAdmin/requestManagement";
 const sendNotificationEp="user/send-notification";
 const monthlyStatesEp="superAdmin/monthly-stats";
+const getStripeKeyEp="stripe/get";
+const editStripeKeyEp="stripe/editKey";
 final spinkit = Container(
   alignment: Alignment.centerLeft,
   height: 3.h,
