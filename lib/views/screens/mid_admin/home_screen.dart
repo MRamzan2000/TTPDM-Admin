@@ -9,9 +9,10 @@ import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_business_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_design_request_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/user_profile_controller.dart';
+import 'package:ttpdm_admin/controller/utils/alert_box.dart';
 import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
 import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
-
+import 'package:ttpdm_admin/views/screens/notification_section/mid_admin_notification_screen.dart';
 import 'business_profile_detail.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,34 +23,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final RxList<String> profilesList = <String>[
-    'Business Profile One',
-    'Business Profile Two',
-    'Business Profile Three'
-  ].obs;
-
+  late DesignRequestController designRequestController;
+  late GetBusinessController getBusinessController;
+  late UserProfileController userProfileController;
+  final RxString id = "".obs;
+  final RxString name = "".obs;
   final RxList<String> svgs = <String>[
     'assets/svgs/cancel.svg',
     'assets/svgs/ok.svg',
     'assets/svgs/new.svg'
   ].obs;
-  late DesignRequestController designRequestController;
-  late GetBusinessController getBusinessController;
-  late UserProfileController userProfileController;
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getBusinessController = Get.put(GetBusinessController(context: context));
     designRequestController = Get.put(DesignRequestController());
     userProfileController = Get.put(UserProfileController(context: context));
-
-    String id = MySharedPreferences.getString(userId);
+    id.value = MySharedPreferences.getString(userId);
+    name.value = MySharedPreferences.getString(userName);
     designRequestController.fetchDesignRequest(
         loading: designRequestController.getDesignRequest.isEmpty);
     userProfileController.fetchUserProfile(
-        loading: userProfileController.userProfile.value == null, id: id);
+        loading: userProfileController.userProfile.value == null, id: id.value);
     getBusinessController.fetchBusinessByStatus(
         context: context,
         isLoad: getBusinessController.pendingBusiness.value == null,
@@ -64,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -136,10 +131,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         : ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: CircleAvatar(
-                              radius: 2.8.h,
-                              backgroundImage:
-                                  const AssetImage('assets/pngs/profile.png'),
+                            leading: GestureDetector(
+                              onTap: () {
+                                openChooseEditProfile(
+                                  context,
+                                  name: userProfileController
+                                      .userProfile.value!.fullname,
+                                  profileImage:
+                                      "${userProfileController.userProfile.value!.profilePic}",
+                                );
+                              },
+                              child: userProfileController
+                                          .userProfile.value!.profilePic !=
+                                      null
+                                  ? CircleAvatar(
+                                      radius: 2.8.h,
+                                      backgroundImage: NetworkImage(
+                                          userProfileController
+                                              .userProfile.value!.profilePic))
+                                  : CircleAvatar(
+                                      radius: 2.8.h,
+                                      backgroundImage: const AssetImage(
+                                          'assets/pngs/profile.png'),
+                                    ),
                             ),
                             title: Text(
                               userProfileController.userProfile.value!.fullname,
@@ -156,7 +170,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 12.px,
                                     color: const Color(0xff2F3542))),
                             trailing: GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Get.to(()=>const MidAdminNotiFicationScreen());
+                              },
                               child: SizedBox(
                                   height: 4.8.h,
                                   width: 4.8.h,
@@ -211,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       : designRequestController.getDesignRequest.isEmpty
                           ? Align(
-                              alignment: Alignment.bottomCenter,
+                              alignment: Alignment.center,
                               child: Text(
-                                "No Approved Business",
+                                "No Design Request Found",
                                 style: TextStyle(
                                   fontSize: 18.px,
                                   color: AppColors.mainColor,
@@ -231,24 +247,83 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    // Get.to(() => BusinessProfile(
-                                    //   businessName: getBusinessController.pendingBusiness.value!.businesses[index].name,
-                                    //   phoneNumber:  getBusinessController.pendingBusiness.value!.businesses[index].phone,
-                                    //   location:  getBusinessController.pendingBusiness.value!.businesses[index].location,
-                                    //   targetArea:  getBusinessController.pendingBusiness.value!.businesses[index].targetMapArea,
-                                    //   description:  getBusinessController.pendingBusiness.value!.businesses[index].description,
-                                    //   businessId:  getBusinessController.pendingBusiness.value!.businesses[index].id,
-                                    //   imagesList:  getBusinessController.pendingBusiness.value!.businesses[index].gallery,
-                                    //   logo:  getBusinessController.pendingBusiness.value!.businesses[index].logo,
-                                    //
-                                    //   webUrl:  getBusinessController.pendingBusiness.value!.businesses[index].websiteUrl,
-                                    //   fb:  getBusinessController.pendingBusiness.value!.businesses[index].facebookUrl,
-                                    //   insta:  getBusinessController.pendingBusiness.value!.businesses[index].instagramUrl,
-                                    //   tiktok:  getBusinessController.pendingBusiness.value!.businesses[index].tiktokUrl,
-                                    //   linkdin:  getBusinessController.pendingBusiness.value!.businesses[index].linkedinUrl,
-                                    //   title: 'new',
-                                    //
-                                    // ));
+                                    Get.to(() => BusinessProfile(
+                                          businessName: designRequestController
+                                              .getDesignRequest
+                                              [index]!
+                                              .business.name
+                                              ,
+                                          phoneNumber: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .phone,
+                                          location:designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .location,
+                                          targetArea: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .targetMapArea,
+                                          description: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .description,
+                                          businessId:designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .id,
+                                          imagesList: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .gallery,
+                                          logo: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .logo,
+                                          webUrl: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .websiteUrl,
+                                          fb:designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .facebookUrl,
+                                          insta: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .instagramUrl,
+                                          tiktok: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .tiktokUrl,
+                                          linkdin: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .linkedinUrl,
+                                          title: 'new',
+                                          ownerId: designRequestController
+                                              .getDesignRequest
+                                          [index]!
+                                              .business
+                                              .owner
+                                              ,
+                                          status: "design",
+                                          id: id.value,
+                                          currentUserName: name.value,
+                                        ));
                                   },
                                   child: Container(
                                     margin: EdgeInsets.symmetric(
@@ -290,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 getVerticalSpace(2.4.h),
                 Text(
-                  'Businesses list ',
+                  'New Business',
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontFamily: 'bold',
@@ -302,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? ListView.builder(
                         shrinkWrap: true,
                         padding: EdgeInsets.zero,
-                        itemCount: profilesList.length,
+                        itemCount: 5,
                         itemBuilder: (context, index) {
                           return Container(
                             margin: EdgeInsets.symmetric(vertical: 1.2.h),
@@ -329,14 +404,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       )
-                    : getBusinessController
-                                .pendingBusiness.value!.businesses.isEmpty &&
-                            getBusinessController
-                                .approvedBusiness.value!.businesses.isEmpty &&
-                            getBusinessController
-                                .rejectedBusinesses.value!.businesses.isEmpty
+                    : getBusinessController.pendingBusiness.value == null &&
+                            getBusinessController.approvedBusiness.value ==
+                                null &&
+                            getBusinessController.rejectedBusinesses.value ==
+                                null
                         ? Align(
-                            alignment: Alignment.bottomCenter,
+                            alignment: Alignment.topCenter,
                             child: Text(
                               "No Businesses",
                               style: TextStyle(
@@ -422,7 +496,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                               .value!
                                               .businesses[index]
                                               .linkedinUrl,
-                                          title: 'new',
+                                          title: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .status,
+                                          ownerId: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .owner
+                                              .id,
+                                          status: getBusinessController
+                                              .pendingBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .status,
+                                          id: id.value,
+                                          currentUserName: name.value,
                                         ));
                                   },
                                   child: Container(
@@ -462,14 +553,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ],
                                         ),
                                         const Expanded(child: SizedBox()),
-                                        Text(
-                                          'Managed by Mohsin',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12.px,
-                                              color: AppColors.mainColor,
-                                              fontFamily: 'bold'),
-                                        ),
+                                        getBusinessController
+                                                    .pendingBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .status ==
+                                                "pending"
+                                            ? const SizedBox.shrink()
+                                            : Text(
+                                                getBusinessController
+                                                    .pendingBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .status,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 12.px,
+                                                    color: AppColors.mainColor,
+                                                    fontFamily: 'bold'),
+                                              ),
                                         Icon(
                                           Icons.arrow_forward_ios_sharp,
                                           size: 2.4.h,

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:ttpdm/controller/custom_widgets/app_colors.dart';
-import 'package:ttpdm/controller/custom_widgets/custom_text_styles.dart';
-import 'package:ttpdm/view/screens/auth_section/register_screen.dart';
-
+import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
+import 'package:ttpdm_admin/views/screens/auth_section/login_screen.dart';
 import '../../../controller/custom_widgets/widgets.dart';
 
 class OnBoardingScreen extends StatelessWidget {
@@ -22,14 +21,12 @@ class OnBoardingScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Obx(
-          () => Stack(
+          () => Stack(alignment: Alignment.center,
             children: [
               Positioned(
                 bottom: 40.h,
-                left: 22.h,
-                right: 19.9.h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                       height: 1.3.h,
@@ -44,7 +41,7 @@ class OnBoardingScreen extends StatelessWidget {
                                   ? Colors.transparent
                                   : Colors.black)),
                     ),
-                    getHorizentalSpace(.6.h),
+                    getHorizentalSpace(1.h),
                     Container(
                       height: 1.3.h,
                       width: 1.3.h,
@@ -58,7 +55,7 @@ class OnBoardingScreen extends StatelessWidget {
                                   ? Colors.transparent
                                   : Colors.black)),
                     ),
-                    getHorizentalSpace(.6.h),
+                    getHorizentalSpace(1.h),
                     Container(
                       height: 1.3.h,
                       width: 1.3.h,
@@ -161,13 +158,13 @@ class OnBoardingScreen extends StatelessWidget {
                 right: 6.h,
                 child: firstPage.value == 2
                     ? customElevatedButton(
-                        title:Text(
+                        title: Text(
                           'Start',
-                          style: CustomTextStyles.buttonTextStyle.copyWith(color:AppColors.whiteColor ),
+                          style: CustomTextStyles.buttonTextStyle
+                              .copyWith(color: AppColors.whiteColor),
                         ),
                         onTap: () {
-                          Get.to(()=> RegisterScreen());
-
+                          Get.to(() => const LoginScreen());
                         },
                         bgColor: AppColors.mainColor,
                         verticalPadding: 1.5.h,
@@ -175,9 +172,10 @@ class OnBoardingScreen extends StatelessWidget {
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GestureDetector(onTap: (){
-                            Get.to(()=> RegisterScreen());
-                          },
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(() => const LoginScreen());
+                            },
                             child: Text(
                               'SKIP',
                               style: CustomTextStyles.buttonTextStyle.copyWith(
@@ -188,7 +186,8 @@ class OnBoardingScreen extends StatelessWidget {
                           customElevatedButton(
                               title: Text(
                                 'NEXT',
-                                style: CustomTextStyles.buttonTextStyle.copyWith(color:AppColors.whiteColor ),
+                                style: CustomTextStyles.buttonTextStyle
+                                    .copyWith(color: AppColors.whiteColor),
                               ),
                               onTap: () {
                                 if (firstPage.value < 2) {

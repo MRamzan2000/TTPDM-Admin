@@ -48,7 +48,7 @@ RxString token="".obs;
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -158,6 +158,13 @@ RxString token="".obs;
                                                   .allMidAdmins[index]!
                                                   .id
                                           );
+                                        }else{
+                                          String id = adminController
+                                              .allMidAdmins[index]!
+                                              .id;
+                                          adminController.allMidAdmins.removeAt(index);
+                                          adminController.deleteMidAdmin(id: id);
+
                                         }
                                       },
                                       icon:  Icon(Icons.more_vert,

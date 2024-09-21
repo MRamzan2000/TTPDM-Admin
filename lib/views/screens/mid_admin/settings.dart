@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/utils/alert_box.dart';
+import 'package:ttpdm_admin/views/screens/auth_section/create_new_password.dart';
 
 
 class SettingScreen extends StatelessWidget {
@@ -18,7 +20,7 @@ class SettingScreen extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -34,13 +36,18 @@ class SettingScreen extends StatelessWidget {
             children: [
               getVerticalSpace(2.4.h),
 
-              Text(
-                'Change Password',
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'bold',
-                    color: const Color(0xff191918),
-                    fontSize: 14.px),
+              GestureDetector(
+                onTap: () {
+                  Get.to(()=>const CreateNewPassword());
+                },
+                child: Text(
+                  'Change Password',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'bold',
+                      color: const Color(0xff191918),
+                      fontSize: 14.px),
+                ),
               ),
               getVerticalSpace(.8.h),
               const Divider(color: Color(0xff6E6E6D),),

@@ -1,81 +1,126 @@
-
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/admin_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/coins_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_all_plans_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_business_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_campaign_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_fcm_send_notification_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/image_picker_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/user_profile_controller.dart';
 import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
 import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
 import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 import 'package:ttpdm_admin/views/screens/auth_section/login_screen.dart';
-import 'package:ttpdm_admin/views/screens/mid_admin/businesses.dart';
 
-import '../../views/screens/super_admin/business_approved.dart';
-import '../custom_widgets/app_colors.dart';
-import '../custom_widgets/custom_text_styles.dart';
-import '../custom_widgets/widgets.dart';
+void openChooseEditProfile(
+  BuildContext context, {
+  required String name,
+  required String profileImage,
+}) {
+  final TextEditingController nameController = TextEditingController();
+  final ImagePickerController imagePickerController =
+      Get.put(ImagePickerController());
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController(context: context));
+  log(profileImage);
+  void resetImagePicker() {
+    imagePickerController.image.value = null;
+  }
 
-void openChooseEditProfile(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) {
       return Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 2.h,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 2.h),
           child: Material(
             borderRadius: BorderRadius.circular(10),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 7.8.h, vertical: 2.h),
+              padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
               height: 42.h,
               decoration: BoxDecoration(
                   color: const Color(0xffF8F9FA),
                   borderRadius: BorderRadius.circular(10)),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Expanded(child: SizedBox()),
+                      getHorizentalSpace(5.h),
                       Text(
-                        '       Profile',
+                        'Profile',
                         style: CustomTextStyles.buttonTextStyle.copyWith(
                             color: AppColors.blackColor,
                             fontFamily: 'regular',
                             fontSize: 20.px),
                       ),
                       const Expanded(child: SizedBox()),
-                      SizedBox(
-                          height: 3.h,
-                          width: 3.h,
-                          child: const Image(
-                              image: AssetImage('assets/pngs/crossicon.png')))
+                      getHorizentalSpace(5.h),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop(); // Close dialog
+                          resetImagePicker(); // Reset image picker
+                        },
+                        child: SizedBox(
+                            height: 3.h,
+                            width: 3.h,
+                            child: const Image(
+                                image:
+                                    AssetImage('assets/pngs/crossicon.png'))),
+                      )
                     ],
                   ),
                   getVerticalSpace(2.h),
-                  CircleAvatar(
-                    radius: 6.h,
-                    backgroundImage:
-                        const AssetImage('assets/pngs/profile.png'),
+                  Obx(
+                    () => GestureDetector(
+                      onTap: () {
+                        imagePickerController.pickImage(ImageSource.gallery);
+                      },
+                      child: imagePickerController.image.value == null
+                          ? CircleAvatar(
+                              radius: 6.h,
+                              backgroundColor: AppColors.baseColor,
+                              backgroundImage: NetworkImage(profileImage),
+                            )
+                          : CircleAvatar(
+                              radius: 6.h,
+                              backgroundColor: AppColors.baseColor,
+                              backgroundImage: FileImage(File(
+                                  imagePickerController.image.value!.path)),
+                            ),
+                    ),
                   ),
                   getVerticalSpace(1.3.h),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Name',
-                      style: TextStyle(
-                          fontSize: 14.px,
-                          fontFamily: 'regular',
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xff454544)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.h),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Name',
+                        style: TextStyle(
+                            fontSize: 14.px,
+                            fontFamily: 'regular',
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xff454544)),
+                      ),
                     ),
                   ),
                   getVerticalSpace(.8.h),
                   Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5.h),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3.h),
                         boxShadow: [
@@ -87,22 +132,56 @@ void openChooseEditProfile(BuildContext context) {
                         ],
                         color: AppColors.whiteColor),
                     child: customTextFormField(
+                      controller: nameController, // Set the controller
+                      title: name,
                       bgColor: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(3.h),
                       borderRadius1: BorderRadius.circular(3.h),
                     ),
                   ),
                   getVerticalSpace(2.6.h),
-                  customElevatedButton(
-                      onTap: () {},
-                      title: Text(
-                        'Save',
-                        style: CustomTextStyles.buttonTextStyle.copyWith(
-                            color: AppColors.whiteColor, fontFamily: 'bold'),
-                      ),
-                      bgColor: AppColors.mainColor,
-                      verticalPadding: .8.h,
-                      horizentalPadding: 6.h),
+                  Obx(
+                    () => Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        customElevatedButton(
+                            onTap: () {
+                              String token =
+                                  MySharedPreferences.getString(authToken);
+
+                              userProfileController
+                                  .uploadProfileImage(
+                                      token: token,
+                                      profileImage: imagePickerController
+                                                  .image.value?.path.isEmpty ??
+                                              true
+                                          ? File("")
+                                          : File(imagePickerController
+                                              .image.value!.path),
+                                      fullname: nameController.text.isEmpty
+                                          ? name
+                                          : nameController.text)
+                                  .then(
+                                (value) {
+                                  Navigator.of(context).pop(); // Close dialog
+                                },
+                              );
+                            },
+                            title: userProfileController.uploading.value
+                                ? spinkit
+                                : Text(
+                                    'Save',
+                                    style: CustomTextStyles.buttonTextStyle
+                                        .copyWith(
+                                            color: AppColors.whiteColor,
+                                            fontFamily: 'bold'),
+                                  ),
+                            bgColor: AppColors.mainColor,
+                            verticalPadding: .8.h,
+                            horizentalPadding: 6.h),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -112,6 +191,8 @@ void openChooseEditProfile(BuildContext context) {
     },
   );
 }
+
+// Check if the image is null or not
 
 void openUserEdit(
   BuildContext context,
@@ -254,15 +335,20 @@ void openUserEdit(
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Obx(() =>
-                        Expanded(
+                      Obx(
+                        () => Expanded(
                           child: customElevatedButton(
                               onTap: () {
-                                adminController.updateMidAdminRights(
-                                    adminId: adminId,
-                                    campaignPermission: indexes.contains(0),
-                                    designAdPermission: indexes.contains(1),
-                                    businessesPermission: indexes.contains(2));
+                                adminController
+                                    .updateMidAdminRights(
+                                        adminId: adminId,
+                                        campaignPermission: indexes.contains(0),
+                                        designAdPermission: indexes.contains(1),
+                                        businessesPermission:
+                                            indexes.contains(2))
+                                    .then(
+                                      (value) {},
+                                    );
                                 // Get.to(() => const BottomNavigationBarAdmin());
                               },
                               title: adminController.updateLoading.value
@@ -291,12 +377,12 @@ void openUserEdit(
   );
 }
 
-void openShareCode(BuildContext context,
-    String adminCode) {
+void openShareCode(BuildContext context, String adminCode) {
   showDialog(
     context: context,
     builder: (context) {
-   final  AdminController adminController=Get.put(AdminController(context: context));
+      final AdminController adminController =
+          Get.put(AdminController(context: context));
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -349,9 +435,7 @@ void openShareCode(BuildContext context,
                   getVerticalSpace(4.h),
                   customElevatedButton(
                       onTap: () {
-                        adminController.shareApp(
-                          adminCode: adminCode
-                        );
+                        adminController.shareApp(adminCode: adminCode);
                       },
                       title: Text(
                         'Share',
@@ -372,15 +456,13 @@ void openShareCode(BuildContext context,
 }
 
 void openCreateNewPlan(BuildContext context,
-{
-  required String title,
-  required String coinPlanId,
-  required String token
-}
-   ) {
-  final CoinsController coinsController = Get.put(CoinsController(context: context));
-  TextEditingController coinsPriceController=TextEditingController();
-  TextEditingController numberCoinsController=TextEditingController();
+    {required String title,
+    required String coinPlanId,
+    required String token}) {
+  final CoinsController coinsController =
+      Get.put(CoinsController(context: context));
+  TextEditingController coinsPriceController = TextEditingController();
+  TextEditingController numberCoinsController = TextEditingController();
 
   showDialog(
     context: context,
@@ -436,7 +518,7 @@ void openCreateNewPlan(BuildContext context,
                         ],
                         color: AppColors.whiteColor),
                     child: customTextFormField(
-                      controller:numberCoinsController ,
+                      controller: numberCoinsController,
                       bgColor: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(2.h),
                       borderRadius1: BorderRadius.circular(2.h),
@@ -492,45 +574,62 @@ void openCreateNewPlan(BuildContext context,
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Obx(() =>
-                        Expanded(
+                      Obx(
+                        () => Expanded(
                           child: customElevatedButton(
                               onTap: () {
-                                if(title=="Update your plan"){
-                                  if(numberCoinsController.text.isEmpty){
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Number of Coins")));
-                                  }else if(coinsPriceController.text.isEmpty){
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Price of Coins")));
-
-                                  }else{
-
+                                if (title == "Update your plan") {
+                                  if (numberCoinsController.text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please Enter Number of Coins")));
+                                  } else if (coinsPriceController
+                                      .text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please Enter Price of Coins")));
+                                  } else {
                                     coinsController.updateCoinsPlan(
                                         token: token,
-                                        numberOfCoins: numberCoinsController.text,
+                                        numberOfCoins:
+                                            numberCoinsController.text,
                                         coinsPrice: coinsPriceController.text,
                                         coinsPlanId: coinPlanId);
                                   }
-                                }else{
-                                  if(numberCoinsController.text.isEmpty){
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Number of Coins")));
-                                  }else if(coinsPriceController.text.isEmpty){
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Price of Coins")));
-
-                                  }else{
-                                    coinsController.createNewCoinsPlan(token: token,
-                                        numberOfCoins: numberCoinsController.text,
+                                } else {
+                                  if (numberCoinsController.text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please Enter Number of Coins")));
+                                  } else if (coinsPriceController
+                                      .text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please Enter Price of Coins")));
+                                  } else {
+                                    coinsController.createNewCoinsPlan(
+                                        token: token,
+                                        numberOfCoins:
+                                            numberCoinsController.text,
                                         coinsPrice: coinsPriceController.text);
                                   }
                                 }
-
-
                               },
-                              title:coinsController.coinsLoading.value?spinkit: Text(
-                                title=="Update your plan"?"Update" :  'Create',
-                                style: CustomTextStyles.buttonTextStyle.copyWith(
-                                    color: AppColors.whiteColor,
-                                    fontFamily: 'bold'),
-                              ),
+                              title: coinsController.coinsLoading.value
+                                  ? spinkit
+                                  : Text(
+                                      title == "Update your plan"
+                                          ? "Update"
+                                          : 'Create',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
                               bgColor: AppColors.mainColor,
                               verticalPadding: .6.h,
                               horizentalPadding: 1.6.h),
@@ -548,18 +647,18 @@ void openCreateNewPlan(BuildContext context,
   );
 }
 
-void openSubscription(BuildContext context,
-{
+void openSubscription(
+  BuildContext context, {
   required title,
   required price,
   required businessLimit,
   required subPlanId,
   required token,
-}
-    ) {
- final AllPlansController  allPlansController = Get.put(AllPlansController(context: context));
-final TextEditingController priceController=TextEditingController();
-final TextEditingController businessLimitController=TextEditingController();
+}) {
+  final AllPlansController allPlansController =
+      Get.put(AllPlansController(context: context));
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController businessLimitController = TextEditingController();
   showDialog(
     context: context,
     builder: (context) {
@@ -674,33 +773,41 @@ final TextEditingController businessLimitController=TextEditingController();
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Obx(() =>
-                    Expanded(
+                      Obx(
+                        () => Expanded(
                           child: customElevatedButton(
                               onTap: () {
-                                if(priceController.text.isEmpty){
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter price of plan")))  ;
-                                }
-                                else if(businessLimitController.text.isEmpty){
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Business Limit of plan")))  ;
-
-                                }else{
+                                if (priceController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Please Enter price of plan")));
+                                } else if (businessLimitController
+                                    .text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Please Enter Business Limit of plan")));
+                                } else {
                                   allPlansController.updateSubPlan(
                                       name: title,
                                       token: token,
                                       price: priceController.text,
-                                      businessLimit: businessLimitController.text,
+                                      businessLimit:
+                                          businessLimitController.text,
                                       subPlanId: subPlanId);
                                 }
                                 // Get.to(() => const BundlesTabBar());
                               },
-                              title:allPlansController.subplanLoading.value?spinkit:
-                              Text(
-                                'Save',
-                                style: CustomTextStyles.buttonTextStyle.copyWith(
-                                    color: AppColors.whiteColor,
-                                    fontFamily: 'bold'),
-                              ),
+                              title: allPlansController.subplanLoading.value
+                                  ? spinkit
+                                  : Text(
+                                      'Save',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
                               bgColor: const Color(0xff34C759),
                               verticalPadding: .6.h,
                               horizentalPadding: 1.6.h),
@@ -718,7 +825,160 @@ final TextEditingController businessLimitController=TextEditingController();
   );
 }
 
-void openRejectReason(BuildContext context) {
+void openRejectReason(
+  BuildContext context, {
+  required String token,
+  required String businessId,
+  required String ownerId,
+  required String id,
+}) {
+  final GetBusinessController getBusinessController =
+      Get.put(GetBusinessController(context: context));
+  final TextEditingController rejectionController = TextEditingController();
+  GetFcmTokenSendNotificationController getFcmTokenSendNotificationController =
+      Get.put(GetFcmTokenSendNotificationController(context: context));
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 2.h,
+          ),
+          child: Material(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 2.4.h, vertical: 2.h),
+              height: 33.h,
+              decoration: BoxDecoration(
+                  color: const Color(0xffF8F9FA),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      'Rejection Reasons',
+                      style: CustomTextStyles.buttonTextStyle.copyWith(
+                          color: AppColors.blackColor,
+                          fontFamily: 'bold',
+                          fontSize: 16.px),
+                    ),
+                  ),
+                  getVerticalSpace(2.h),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Descriptions',
+                      style: TextStyle(
+                          fontSize: 14.px,
+                          fontFamily: 'regular',
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff454544)),
+                    ),
+                  ),
+                  getVerticalSpace(.8.h),
+                  customTextFormField(
+                    controller: rejectionController,
+                    maxLines: 2,
+                    bgColor: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(1.h),
+                    borderRadius1: BorderRadius.circular(1.h),
+                  ),
+                  getVerticalSpace(2.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: customElevatedButton(
+                            onTap: () {
+                              Get.back();
+                            },
+                            title: Text(
+                              'Deny',
+                              style: CustomTextStyles.buttonTextStyle.copyWith(
+                                  color: AppColors.whiteColor,
+                                  fontFamily: 'bold'),
+                            ),
+                            bgColor: const Color(0xffC3C3C2),
+                            verticalPadding: .6.h,
+                            horizentalPadding: 1.6.h),
+                      ),
+                      getHorizentalSpace(1.6.h),
+                      Expanded(
+                        child: Obx(
+                          () => customElevatedButton(
+                              onTap: () {
+                                if (rejectionController.text.isEmpty) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please enter the reason")));
+                                  }
+                                } else {
+                                  getBusinessController
+                                      .changeBusinessStatus(
+                                          token: token,
+                                          businessId: businessId,
+                                          status: "rejected",
+                                          rejectionReason:
+                                              rejectionController.text)
+                                      .then(
+                                    (value) {
+                                      getFcmTokenSendNotificationController
+                                          .fetchFcmToken(
+                                              loading:
+                                                  getFcmTokenSendNotificationController
+                                                          .fcmToken.value ==
+                                                      null,
+                                              userId: ownerId,
+                                              token: token,
+                                              title: "Sorry",
+                                              message:
+                                                  "Your Business was Rejected Because ${rejectionController.text}",
+                                              info1: "id $id",
+                                              info2: "");
+                                    },
+                                  );
+                                }
+                              },
+                              title: getBusinessController.rejectLoader.value
+                                  ? spinkit
+                                  : Text(
+                                      'Send',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
+                              bgColor: AppColors.mainColor,
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void openCampaignStatus(
+  BuildContext context, {
+  required String token,
+  required String campaignId,
+  required String ownerId,
+}) {
+  final AddCampaignController addCampaignController =
+      Get.put(AddCampaignController(context: context));
+  final TextEditingController rejectionController = TextEditingController();
+  final GetFcmTokenSendNotificationController getFcmTokenSendNotificationController=Get.put(GetFcmTokenSendNotificationController(context: context));
   showDialog(
     context: context,
     builder: (context) {
@@ -761,30 +1021,21 @@ void openRejectReason(BuildContext context) {
                     ),
                   ),
                   getVerticalSpace(.8.h),
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(1.h),
-                        boxShadow: [
-                          BoxShadow(
-                              color: const Color(0xff000000).withOpacity(0.1),
-                              blurRadius: 8,
-                              spreadRadius: 0,
-                              offset: const Offset(0, 1))
-                        ],
-                        color: AppColors.whiteColor),
-                    child: customTextFormField(
-                      bgColor: AppColors.whiteColor,
-                      borderRadius: BorderRadius.circular(1.h),
-                      borderRadius1: BorderRadius.circular(1.h),
-                    ),
+                  customTextFormField(
+                    controller: rejectionController,
+                    maxLines: 2,
+                    bgColor: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(1.h),
+                    borderRadius1: BorderRadius.circular(1.h),
                   ),
-                  getVerticalSpace(1.6.h),
-                  getVerticalSpace(3.8.h),
+                  getVerticalSpace(2.h),
                   Row(
                     children: [
                       Expanded(
                         child: customElevatedButton(
-                            onTap: () {},
+                            onTap: () {
+                              Get.back();
+                            },
                             title: Text(
                               'Deny',
                               style: CustomTextStyles.buttonTextStyle.copyWith(
@@ -797,17 +1048,51 @@ void openRejectReason(BuildContext context) {
                       ),
                       getHorizentalSpace(1.6.h),
                       Expanded(
-                        child: customElevatedButton(
-                            onTap: () {},
-                            title: Text(
-                              'Send',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: AppColors.mainColor,
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
+                        child: Obx(
+                          () => customElevatedButton(
+                              onTap: () {
+                                if (rejectionController.text.isEmpty) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Please enter the reason")));
+                                  }
+                                } else {
+                                  addCampaignController.changeCampaignStatus(
+                                      token: token,
+                                      campaignId: campaignId,
+                                      status: "rejected",
+                                      rejectionReason:
+                                          rejectionController.text).then((value) {
+                                    getFcmTokenSendNotificationController
+                                        .fetchFcmToken(
+                                        loading:
+                                        getFcmTokenSendNotificationController
+                                            .fcmToken.value ==
+                                            null,
+                                        userId:ownerId ,
+                                        token:token,
+                                        title: "Sorry",
+                                        message: "Campaign Was Rejected",
+                                        info1: "",
+                                        info2: "");
+                                          },);
+                                }
+                              },
+                              title: addCampaignController.rejectLoader.value
+                                  ? spinkit
+                                  : Text(
+                                      'Send',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
+                              bgColor: AppColors.mainColor,
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
                       ),
                     ],
                   ),
@@ -821,7 +1106,19 @@ void openRejectReason(BuildContext context) {
   );
 }
 
-void addAnalytics(BuildContext context) {
+void addAnalytics(
+  BuildContext context, {
+  required String campaignId,
+  required String token,
+  required String ownerId,
+  required String ownerName,
+}) {
+  final TextEditingController impressionController = TextEditingController();
+  final TextEditingController clickController = TextEditingController();
+  AddCampaignController addCampaignController =
+      Get.put(AddCampaignController(context: context));
+  GetFcmTokenSendNotificationController getFcmTokenSendNotificationController =
+      Get.put(GetFcmTokenSendNotificationController(context: context));
   showDialog(
     context: context,
     builder: (context) {
@@ -874,7 +1171,9 @@ void addAnalytics(BuildContext context) {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () async {},
+                        onTap: () async {
+                          addCampaignController.pickDate();
+                        },
                         child: Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 1.2.h, vertical: .85.h),
@@ -885,27 +1184,42 @@ void addAnalytics(BuildContext context) {
                             ),
                             borderRadius: BorderRadius.circular(5.h),
                           ),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                height: 2.4.h,
-                                width: 2.4.h,
-                                child: const Image(
-                                  image: AssetImage('assets/pngs/dateicon.png'),
-                                  fit: BoxFit.cover,
+                          child: Obx(
+                            () => Row(
+                              children: [
+                                SizedBox(
+                                  height: 2.4.h,
+                                  width: 2.4.h,
+                                  child: const Image(
+                                    image:
+                                        AssetImage('assets/pngs/dateicon.png'),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: .8.h),
-                              Text(
-                                'Select',
-                                style: TextStyle(
-                                  color: AppColors.mainColor,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'bold',
-                                  fontSize: 12.px,
-                                ),
-                              ),
-                            ],
+                                SizedBox(width: .8.h),
+                                addCampaignController.formattedDate
+                                        .toString()
+                                        .isEmpty
+                                    ? Text(
+                                        'Select',
+                                        style: TextStyle(
+                                          color: AppColors.mainColor,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'bold',
+                                          fontSize: 12.px,
+                                        ),
+                                      )
+                                    : Text(
+                                        addCampaignController.formattedDate,
+                                        style: TextStyle(
+                                          color: AppColors.mainColor,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'bold',
+                                          fontSize: 12.px,
+                                        ),
+                                      ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -939,6 +1253,7 @@ void addAnalytics(BuildContext context) {
                     children: [
                       Expanded(
                         child: customTextFormField(
+                          controller: impressionController,
                           keyboardType: const TextInputType.numberWithOptions(),
                           bgColor: const Color(0xffEBEDF0),
                           borderRadius: BorderRadius.circular(3.h),
@@ -948,6 +1263,7 @@ void addAnalytics(BuildContext context) {
                       getHorizentalSpace(1.2.h),
                       Expanded(
                         child: customTextFormField(
+                          controller: clickController,
                           keyboardType: const TextInputType.numberWithOptions(),
                           bgColor: const Color(0xffEBEDF0),
                           borderRadius: BorderRadius.circular(3.h),
@@ -975,20 +1291,70 @@ void addAnalytics(BuildContext context) {
                             horizentalPadding: 1.6.h),
                       ),
                       getHorizentalSpace(1.6.h),
-                      Expanded(
-                        child: customElevatedButton(
-                            onTap: () {
-                              Get.to(() => const BusinessTabBar());
-                            },
-                            title: Text(
-                              'Send',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: AppColors.mainColor,
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
+                      Obx(
+                        () => Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                if (impressionController.text.isEmpty) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text("please add impression")));
+                                  }
+                                } else if (clickController.text.isEmpty) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text("please add Clicks")));
+                                  }
+                                } else {
+                                  addCampaignController
+                                      .addAnalysis(
+                                          campaignId: campaignId,
+                                          date: addCampaignController
+                                              .formattedDate,
+                                          impressions: impressionController.text
+                                              .toString(),
+                                          clicks:
+                                              clickController.text.toString())
+                                      .then(
+                                    (value) {
+                                      getFcmTokenSendNotificationController
+                                          .fetchFcmToken(
+                                              loading:
+                                                  getFcmTokenSendNotificationController
+                                                          .fcmToken.value ==
+                                                      null,
+                                              userId: ownerId,
+                                              token: token,
+                                              title: "Analysis",
+                                              message:
+                                                  "$ownerName Added your Campaign Analysis",
+                                              info1: "id $ownerId",
+                                              info2: "");
+                                    },
+                                  ).then(
+                                    (value) {
+                                      Get.back();
+                                    },
+                                  );
+                                }
+                              },
+                              title: addCampaignController.analysisLoader.value
+                                  ? spinkit
+                                  : Text(
+                                      'Send',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
+                              bgColor: AppColors.mainColor,
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
                       ),
                     ],
                   ),
@@ -1002,7 +1368,15 @@ void addAnalytics(BuildContext context) {
   );
 }
 
-void manageApproval(BuildContext context) {
+void manageApproval(
+  BuildContext context, {
+  required String midAdminName,
+  required String requestId,
+  required String midAdminId,
+  required String token,
+}) {
+  AdminController adminController = Get.put(AdminController(context: context));
+final GetFcmTokenSendNotificationController getFcmTokenSendNotificationController=Get.put(GetFcmTokenSendNotificationController(context: context));
   showDialog(
     context: context,
     builder: (context) {
@@ -1051,9 +1425,9 @@ void manageApproval(BuildContext context) {
                   const Divider(
                     color: Colors.grey,
                   ),
-                  getVerticalSpace(7.h),
+                  getVerticalSpace(5.h),
                   Text(
-                    'Ali want to manage the business name',
+                    '$midAdminName want to manage the business name',
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: AppColors.mainColor,
@@ -1061,40 +1435,90 @@ void manageApproval(BuildContext context) {
                         fontFamily: 'bold'),
                   ),
                   getVerticalSpace(4.7.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: customElevatedButton(
-                            onTap: () {
-                              Get.back();
-                            },
-                            title: Text(
-                              'Reject',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: const Color(0xffC3C3C2),
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
-                      ),
-                      getHorizentalSpace(1.6.h),
-                      Expanded(
-                        child: customElevatedButton(
-                            onTap: () {
-                              Get.to(() => BusinessApproval());
-                            },
-                            title: Text(
-                              'Approve',
-                              style: CustomTextStyles.buttonTextStyle.copyWith(
-                                  color: AppColors.whiteColor,
-                                  fontFamily: 'bold'),
-                            ),
-                            bgColor: AppColors.mainColor,
-                            verticalPadding: .6.h,
-                            horizentalPadding: 1.6.h),
-                      ),
-                    ],
+                  Obx(
+                    () => Row(
+                      children: [
+                        Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                adminController
+                                    .updateBusinessManageRequest(
+                                        requestId: requestId, status: "reject")
+                                    .then(
+                                  (value) {
+                                    getFcmTokenSendNotificationController
+                                        .fetchFcmToken(
+                                        loading:
+                                        getFcmTokenSendNotificationController
+                                            .fcmToken.value ==
+                                            null,
+                                        userId:midAdminId ,
+                                        token:token,
+                                        title: "Sorry",
+                                        message: "Manage Request Rejected",
+                                        info1: "",
+                                        info2: "").then((value) {
+                                          Get.back();
+                                        },);
+                                  },
+                                );
+                              },
+                              title: adminController
+                                      .updateBusinessManageLoading1.value
+                                  ? spinkit
+                                  : Text(
+                                      'Reject',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
+                              bgColor: const Color(0xffC3C3C2),
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
+                        getHorizentalSpace(1.6.h),
+                        Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                adminController
+                                    .updateBusinessManageRequest(
+                                        requestId: requestId, status: "approve")
+                                    .then(
+                                  (value) {
+                                    getFcmTokenSendNotificationController
+                                        .fetchFcmToken(
+                                        loading:
+                                        getFcmTokenSendNotificationController
+                                            .fcmToken.value ==
+                                            null,
+                                        userId:midAdminId ,
+                                        token:token,
+                                        title: "Congratulation",
+                                        message: "Manage Request Approved",
+                                        info1: "",
+                                        info2: "").then((value) {
+                                          Get.back();
+                                        },);
+                                  },
+                                );
+                              },
+                              title: adminController
+                                      .updateBusinessManageLoading.value
+                                  ? spinkit
+                                  : Text(
+                                      'Approve',
+                                      style: CustomTextStyles.buttonTextStyle
+                                          .copyWith(
+                                              color: AppColors.whiteColor,
+                                              fontFamily: 'bold'),
+                                    ),
+                              bgColor: AppColors.mainColor,
+                              verticalPadding: .6.h,
+                              horizentalPadding: 1.6.h),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1119,7 +1543,7 @@ void logoutPopUp(BuildContext context) {
             borderRadius: BorderRadius.circular(10),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 2.4.h, vertical: 2.h),
-              height: 33.h,
+              height: 36.h,
               decoration: BoxDecoration(
                   color: const Color(0xffF8F9FA),
                   borderRadius: BorderRadius.circular(10)),
@@ -1192,7 +1616,7 @@ void logoutPopUp(BuildContext context) {
                         child: customElevatedButton(
                             onTap: () {
                               MySharedPreferences.setBool(isLoggedInKey, false);
-                              Get.off(() => LoginScreen());
+                              Get.off(() => const LoginScreen());
                             },
                             title: Text(
                               'Yes',

@@ -59,7 +59,6 @@ Widget customTextFormField({
   TextEditingController? controller,
   TextInputType? keyboardType,
   int? maxLines = 1, // Set default to 1 for single-line input
-  int? minLines = 1, // Ensure a minimum number of lines
   String? errorText,
   Color? focusBorderColor,
   Color? bgColor,
@@ -68,7 +67,6 @@ Widget customTextFormField({
   BorderRadius? borderRadius1,
 }) {
   return TextFormField(
-    minLines: minLines,
     maxLines: maxLines,
     keyboardType: keyboardType,
     controller: controller,

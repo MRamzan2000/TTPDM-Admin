@@ -10,6 +10,7 @@ class LoginUserController extends GetxController {
   Future<void> userLogin({
     required String email,
     required String password,
+    required String fcmToken,
     required isLogin
   }) async {
     try {
@@ -17,7 +18,7 @@ class LoginUserController extends GetxController {
       await AuthApis(context: context)
           .loginApis(
         email: email,
-        password: password,
+        password: password, fcmToken: fcmToken,
       )
           .then(
         (value) {

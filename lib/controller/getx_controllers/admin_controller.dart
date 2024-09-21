@@ -103,4 +103,46 @@ class AdminController extends GetxController {
 
     Share.share('Admin Code:$adminCode');
   }
+
+  //Delete Mid Admin
+  Future<void> deleteMidAdmin({required String id}) async {
+    try {
+      AdminApis(context: context)
+          .deleteMidAdminMethodApi(id: id, context: context);
+    } catch (e) {
+      log("unexpected error occurred :${e.toString()}");
+    }
+  }
+
+  //handle Business Manage Request
+  final RxBool updateBusinessManageLoading = false.obs;
+  final RxBool updateBusinessManageLoading1 = false.obs;
+  Future<void> updateBusinessManageRequest({
+    required String requestId,
+    required String status,
+  }) async {
+    try {
+      if(status=="approve"){
+        updateBusinessManageLoading.value = true;
+
+      }else{
+        updateBusinessManageLoading1.value = true;
+
+      }
+      AdminApis(context: context)
+          .handleBusinessManageRequest(requestId: requestId, status: status)
+          .then(
+        (value) {
+          updateBusinessManageLoading.value = false;
+          updateBusinessManageLoading1.value = false;
+        },
+      );
+    } catch (e) {
+      updateBusinessManageLoading.value = false;
+      updateBusinessManageLoading1.value = false;
+      log("unexpected error occurred :${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("unexpected error occurred :${e.toString()}")));
+    }
+  }
 }

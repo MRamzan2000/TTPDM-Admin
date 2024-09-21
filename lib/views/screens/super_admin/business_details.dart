@@ -1,14 +1,19 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_business_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_design_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_fcm_send_notification_controller.dart';
 import 'package:ttpdm_admin/controller/utils/alert_box.dart';
-
-import '../../../controller/custom_widgets/app_colors.dart';
-import '../../../controller/custom_widgets/custom_text_styles.dart';
-
-class BusinessAdmin extends StatelessWidget {
+import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
+class BusinessAdmin extends StatefulWidget {
   final String? title;
   final String businessName;
   final String phoneNumber;
@@ -23,21 +28,50 @@ class BusinessAdmin extends StatelessWidget {
   final String insta;
   final String tiktok;
   final String linkdin;
-  BusinessAdmin({
-    super.key,
-    this.title, required this.businessName, required this.phoneNumber, required this.location, required this.targetArea, required this.description, required this.businessId, required this.imagesList, required this.logo, required this.webUrl, required this.fb, required this.insta, required this.tiktok, required this.linkdin
-  });
+  final String ownerId;
+  const BusinessAdmin(
+      {super.key,
+      this.title,
+      required this.businessName,
+      required this.phoneNumber,
+      required this.location,
+      required this.targetArea,
+      required this.description,
+      required this.businessId,
+      required this.imagesList,
+      required this.logo,
+      required this.webUrl,
+      required this.fb,
+      required this.insta,
+      required this.tiktok,
+      required this.linkdin, required this.ownerId});
+
+  @override
+  State<BusinessAdmin> createState() => _BusinessAdminState();
+}
+
+class _BusinessAdminState extends State<BusinessAdmin> {
   final AddDesignController addDesignController =
       Get.put(AddDesignController());
+  late GetBusinessController getBusinessController;
+  RxString token = "".obs;
+  RxString id = "".obs;
+  RxString name = "".obs;
+  late GetFcmTokenSendNotificationController getFcmTokenSendNotificationController;
+
+  @override
+  void initState() {
+    super.initState();
+    getBusinessController = Get.put(GetBusinessController(context: context));
+    getFcmTokenSendNotificationController=Get.put(GetFcmTokenSendNotificationController(context: context));
+    token.value = MySharedPreferences.getString(authToken);
+    id.value = MySharedPreferences.getString(authToken);
+    name.value = MySharedPreferences.getString(userName);
+    log("Auth Token is that :${token.value}");
+  }
   @override
   Widget build(BuildContext context) {
-    final List<String> images = [
-      'assets/pngs/itemfive.png',
-      'assets/pngs/itemfour.png',
-      'assets/pngs/itemthree.png',
-      'assets/pngs/itemtwo.png'
-    ];
-
+    log("${widget.title}");
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -54,7 +88,7 @@ class BusinessAdmin extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-         businessName,
+          widget.businessName,
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -104,15 +138,7 @@ class BusinessAdmin extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 4.2.h,
-                            backgroundImage: NetworkImage(logo),
-                            // child: Text(
-                            //   'Logo',
-                            //   style: TextStyle(
-                            //       fontWeight: FontWeight.w700,
-                            //       fontFamily: 'bold',
-                            //       fontSize: 20.px,
-                            //       color: const Color(0xffC3C3C2)),
-                            // ),
+                            backgroundImage: NetworkImage(widget.logo),
                           ),
                           getVerticalSpace(.8.h),
                           Text(
@@ -137,7 +163,7 @@ class BusinessAdmin extends StatelessWidget {
                     ),
                     getVerticalSpace(.8.h),
                     Text(
-                     businessName,
+                      widget.businessName,
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: 'bold',
@@ -155,7 +181,7 @@ class BusinessAdmin extends StatelessWidget {
                     ),
                     getVerticalSpace(.8.h),
                     Text(
-                      phoneNumber,
+                      widget.phoneNumber,
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: 'bold',
@@ -173,7 +199,7 @@ class BusinessAdmin extends StatelessWidget {
                     ),
                     getVerticalSpace(.8.h),
                     Text(
-                    location,
+                      widget.location,
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: 'bold',
@@ -191,7 +217,7 @@ class BusinessAdmin extends StatelessWidget {
                     ),
                     getVerticalSpace(.8.h),
                     Text(
-                    targetArea,
+                      widget.targetArea,
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: 'bold',
@@ -209,7 +235,7 @@ class BusinessAdmin extends StatelessWidget {
                     ),
                     getVerticalSpace(.8.h),
                     Text(
-                      description,
+                      widget.description,
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontFamily: 'bold',
@@ -235,7 +261,7 @@ class BusinessAdmin extends StatelessWidget {
                       height: 30.3.h,
                       child: GridView.builder(
                         padding: EdgeInsets.zero,
-                        itemCount: imagesList.length,
+                        itemCount: widget.imagesList.length,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
@@ -252,7 +278,9 @@ class BusinessAdmin extends StatelessWidget {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(1.h),
                                   color: AppColors.whiteColor,
-                                  image: DecorationImage(image: NetworkImage(imagesList[index])),
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          widget.imagesList[index])),
                                   boxShadow: const [
                                     BoxShadow(
                                         offset: Offset(0, 1),
@@ -260,48 +288,140 @@ class BusinessAdmin extends StatelessWidget {
                                         blurRadius: 8,
                                         color: Color(0xffFFE4EA))
                                   ]),
-                            
                             ),
                           ]);
                         },
                       ),
                     ),
                     getVerticalSpace(3.1.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: customElevatedButton(
-                              onTap: () {
-                                openRejectReason(context);
-                              },
-                              title: Text(
-                                'Reject',
-                                style: CustomTextStyles.buttonTextStyle.copyWith(
-                                    color:  AppColors.whiteColor, fontFamily: 'bold'),
-                              ),
-                              bgColor: const Color(0xff000000).withOpacity(0.3),
-                              verticalPadding: .6.h,
-                              horizentalPadding: 4.6.h),
+                    widget.title == "rejected"
+                        ? Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Text(
+                              "Business was Rejected",
+                              style: CustomTextStyles.onBoardingHeading
+                                  .copyWith(fontSize: 16.px),
+                            ),
+                          )
+                        : widget.title == "accepted"
+                            ? Column(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Text(
+                                      "Business was Approved",
+                                      style: CustomTextStyles.onBoardingHeading
+                                          .copyWith(
+                                              fontSize: 14.px,
+                                              color: AppColors.blackColor),
+                                    ),
+                                  ),
+                                  getVerticalSpace(1.h),
+              Obx(() => Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 4.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: customElevatedButton(
+                        onTap: () {
+                          log("widget.businessId :${widget.businessId}");
+                          getBusinessController.businessManageRequest(
+                            token: token.value,
+                            businessId: widget.businessId,
+                          ).then((value) {
+                            getFcmTokenSendNotificationController
+                                .fetchFcmToken(
+                                loading:
+                                getFcmTokenSendNotificationController
+                                    .fcmToken.value ==
+                                    null,
+                                userId: "66edbd3bbfa32fafa2a4ebb3",
+                                token: token.value,
+                                title: "Request",
+                                message: "${name.value}Business Manage Request",
+                                info1: "id ${id.value}",
+                                info2: "");
+                          },);
+                        },
+                        horizentalPadding: 0,
+                        title: getBusinessController.businessManageLoader.value
+                            ? spinkit
+                            : Text(
+                          "Request for manage",
+                          style: CustomTextStyles.buttonTextStyle,
                         ),
-                        getHorizentalSpace(1.6.h),
-                        Expanded(
-                          child: customElevatedButton(
-                              onTap: () {
-                                if(title=='SuperAdmin'){
-                                  manageApproval(context);
-                                }
-                              },
-                              title: Text(
-                                'Approve',
-                                style: CustomTextStyles.buttonTextStyle.copyWith(
-                                    color:  AppColors.whiteColor, fontFamily: 'bold'),
-                              ),
-                              bgColor:AppColors.mainColor,
-                              verticalPadding: .6.h,
-                              horizentalPadding: 2.h),
-                        ),
-                      ],
+                        bgColor: AppColors.mainColor,
+                      ),
                     ),
+                  ],
+                ),
+              )),
+
+              ],
+                              )
+                            : Row(
+                                children: [
+                                  Expanded(
+                                    child: customElevatedButton(
+                                        onTap: () {
+                                          openRejectReason(context,
+                                              token: token.value,
+                                              businessId: widget.businessId, ownerId: widget.ownerId, id: id.value);
+                                        },
+                                        horizentalPadding: 0,
+                                        title: Text(
+                                          "Reject",
+                                          style:
+                                              CustomTextStyles.buttonTextStyle,
+                                        ),
+                                        bgColor: const Color(0xff999999)),
+                                  ),
+                                  getHorizentalSpace(1.8.h),
+                                  Expanded(
+                                    child: Obx(
+                                      () => customElevatedButton(
+                                          onTap: () {
+                                            getBusinessController
+                                                .changeBusinessStatus(
+                                                    token: token.value,
+                                                    businessId:
+                                                        widget.businessId,
+                                                    status: "accepted",
+                                                    rejectionReason: "Approved")
+                                                .then(
+                                              (value) {
+
+                                                getFcmTokenSendNotificationController
+                                                    .fetchFcmToken(
+                                                    loading:
+                                                    getFcmTokenSendNotificationController
+                                                        .fcmToken.value ==
+                                                        null,
+                                                    userId: widget.ownerId,
+                                                    token: token.value,
+                                                    title: "Congratulation",
+                                                    message: "${name.value}Business Was Approved",
+                                                    info1: "id ${id.value}",
+                                                    info2: "");
+                                              },
+                                            );
+                                            log("businessId :${widget.businessId}");
+                                          },
+                                          horizentalPadding: 0,
+                                          title: getBusinessController
+                                                  .approvedLoader.value
+                                              ? spinkit
+                                              : Text(
+                                                  "Approve",
+                                                  style: CustomTextStyles
+                                                      .buttonTextStyle,
+                                                ),
+                                          bgColor: AppColors.mainColor),
+                                    ),
+                                  )
+                                ],
+                              ),
                     getVerticalSpace(4.h)
                   ]),
             ),

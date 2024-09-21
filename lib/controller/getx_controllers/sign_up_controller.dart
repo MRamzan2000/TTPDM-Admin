@@ -6,8 +6,8 @@ class SignUpController extends GetxController {
   final BuildContext context;
   SignUpController({required this.context});
   final RxBool isLoading = false.obs;
-//sighUp Method
-  Future<void> userSignUp({
+  //mid Admin SignUp
+  Future<void> midAdminSignUp({
     required String fullName,
     required String email,
     required String phoneNumber,

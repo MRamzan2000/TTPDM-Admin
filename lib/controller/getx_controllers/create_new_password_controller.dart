@@ -12,6 +12,7 @@ class CreateNewPasswordController extends GetxController {
   Future<void> createNewPassword(
       {required String newPassword,
       required String confirmPassword,
+      required String token,
       required String userId}) async {
     try {
       isLoading.value = true;
@@ -19,7 +20,7 @@ class CreateNewPasswordController extends GetxController {
           .resetPassword(
               newPassword: newPassword,
               confirmPassword: confirmPassword,
-              token: '')
+              token: token)
           .then(
             (value) => isLoading.value = false,
           );

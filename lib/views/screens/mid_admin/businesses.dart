@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -18,19 +19,19 @@ class BusinessTabBar extends StatefulWidget {
 
 class _BusinessTabBarState extends State<BusinessTabBar> {
   final RxInt selectedIndex = 0.obs;
-late GetBusinessController getBusinessController;
-@override
+  late GetBusinessController getBusinessController;
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    getBusinessController=Get.put(GetBusinessController(context: context));
-    getBusinessController.fetchBusinessByStatus(context: context,
-        isLoad: getBusinessController.pendingBusiness.value==null,
+    getBusinessController = Get.put(GetBusinessController(context: context));
+    getBusinessController.fetchBusinessByStatus(
+        context: context,
+        isLoad: getBusinessController.pendingBusiness.value == null,
         status: 'pending');
   }
+
   @override
   Widget build(BuildContext context) {
-
     final RxString isSelected = 'Pending'.obs;
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +39,7 @@ late GetBusinessController getBusinessController;
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -57,10 +58,12 @@ late GetBusinessController getBusinessController;
                   children: [
                     GestureDetector(
                       onTap: () {
-
                         isSelected.value = 'Pending';
-                        getBusinessController.fetchBusinessByStatus(context: context,
-                            isLoad: getBusinessController.pendingBusiness.value==null,
+                        getBusinessController.fetchBusinessByStatus(
+                            context: context,
+                            isLoad:
+                                getBusinessController.pendingBusiness.value ==
+                                    null,
                             status: 'pending');
                       },
                       child: Container(
@@ -85,9 +88,13 @@ late GetBusinessController getBusinessController;
                     GestureDetector(
                       onTap: () {
                         isSelected.value = 'Approved';
-                        getBusinessController.fetchBusinessByStatus(context: context,
-                            isLoad: getBusinessController.approvedBusiness.value==null,
-                            status: 'approved');
+                        getBusinessController.fetchBusinessByStatus(
+                            context: context,
+                            isLoad:
+                                getBusinessController.approvedBusiness.value ==
+                                    null,
+                            status: 'accepted');
+
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width / 3,
@@ -112,8 +119,11 @@ late GetBusinessController getBusinessController;
                     GestureDetector(
                       onTap: () {
                         isSelected.value = 'Rejected';
-                        getBusinessController.fetchBusinessByStatus(context: context,
-                            isLoad: getBusinessController.rejectedBusinesses.value==null,
+                        getBusinessController.fetchBusinessByStatus(
+                            context: context,
+                            isLoad: getBusinessController
+                                    .rejectedBusinesses.value ==
+                                null,
                             status: 'rejected');
                       },
                       child: Container(
@@ -140,283 +150,537 @@ late GetBusinessController getBusinessController;
                 ),
               ),
               getVerticalSpace(2.4.h),
-        isSelected.value == 'Pending'?
-              getBusinessController.isLoading.value?
-              Expanded(
-                child: ListView.builder(shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Shimmer.fromColors(
-                      baseColor: AppColors.baseColor,
-                      highlightColor: AppColors.baseColor,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                        padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                            vertical: 4.0.h),
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius: BorderRadius.circular(1.h)
-                        ),
+              isSelected.value == 'Pending'
+                  ? getBusinessController.isLoading.value
+                      ? Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.symmetric(horizontal: 2.4.h),
+                            itemCount: 10,
+                            itemBuilder: (context, index) {
+                              return Shimmer.fromColors(
+                                baseColor: AppColors.baseColor,
+                                highlightColor: AppColors.baseColor,
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(vertical: 1.2.h),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 1.6.h, vertical: 4.0.h),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.whiteColor,
+                                      borderRadius: BorderRadius.circular(1.h)),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : getBusinessController
+                              .pendingBusiness.value!.businesses.isEmpty
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                getVerticalSpace(20.h),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Text(
+                                    "No Pending Business",
+                                    style: TextStyle(
+                                      fontSize: 18.px,
+                                      color: AppColors.mainColor,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'bold',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 2.4.h),
+                                itemCount: getBusinessController
+                                    .pendingBusiness.value!.businesses.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
 
-                      ),
-                    );
-                  },),
-              ):getBusinessController.pendingBusiness.value!.businesses.isEmpty?
-              Column(mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [ getVerticalSpace(20.h),
-            Align(alignment: Alignment.bottomCenter,
-              child: Text(
-                "No Pending Business",
-                style: TextStyle(
-                  fontSize: 18.px,
-                  color: AppColors.mainColor,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'bold',
-                ),
-              ),
-            ),
-          ],
-        ):
-              Expanded(
-                child: ListView.builder(shrinkWrap: true,
-                  padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-                  itemCount: getBusinessController.pendingBusiness.value!.businesses.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(onTap: (){
-                      Get.to(()=> BusinessAdmin(
-                        businessName: getBusinessController.pendingBusiness.value!.businesses[index].name,
-                        phoneNumber:  getBusinessController.pendingBusiness.value!.businesses[index].phone,
-                        location:  getBusinessController.pendingBusiness.value!.businesses[index].location,
-                        targetArea:  getBusinessController.pendingBusiness.value!.businesses[index].targetMapArea,
-                        description:  getBusinessController.pendingBusiness.value!.businesses[index].description,
-                        businessId:  getBusinessController.pendingBusiness.value!.businesses[index].id,
-                        imagesList:  getBusinessController.pendingBusiness.value!.businesses[index].gallery,
-                        logo:  getBusinessController.pendingBusiness.value!.businesses[index].logo,
-                
-                        webUrl:  getBusinessController.pendingBusiness.value!.businesses[index].websiteUrl,
-                        fb:  getBusinessController.pendingBusiness.value!.businesses[index].facebookUrl,
-                        insta:  getBusinessController.pendingBusiness.value!.businesses[index].instagramUrl,
-                        tiktok:  getBusinessController.pendingBusiness.value!.businesses[index].tiktokUrl,
-                        linkdin:  getBusinessController.pendingBusiness.value!.businesses[index].linkedinUrl,
-                
-                      ));
-                    },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                        padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                            vertical: 2.0.h),
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius: BorderRadius.circular(1.h)
-                        ),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(getBusinessController.pendingBusiness.value!.businesses[index].name,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'bold',
-                                  fontSize: 14.px,
-                                  color: const Color(0xff282827)
-                              ),),
-                
-                            Icon(Icons.arrow_forward_ios_sharp,
-                              size: 2.4.h,color:
-                              const Color(0xff191918),)
-                          ],
-                        ),
-                      ),
-                    );
-                  },),
-              ):
-        isSelected.value == 'Approved'?
-              getBusinessController.isLoading.value?
-              Expanded(
-                child: ListView.builder(shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Shimmer.fromColors(
-                      baseColor: AppColors.baseColor,
-                      highlightColor: AppColors.baseColor,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                        padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                            vertical: 4.0.h),
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius: BorderRadius.circular(1.h)
-                        ),
-
-                      ),
-                    );
-                  },),
-              ):
-              getBusinessController.approvedBusiness.value!.businesses.isEmpty?
-                Column(mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  getVerticalSpace(20.h),
-                  Align(alignment: Alignment.bottomCenter,
-                    child: Text(
-                      "No Approved Business",
-                      style: TextStyle(
-                        fontSize: 18.px,
-                        color: AppColors.mainColor,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'bold',
-                      ),
-                    ),
-                  ),
-                ],
-              ):
-              ListView.builder(shrinkWrap: true,
-                padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-                itemCount: getBusinessController.approvedBusiness.value!.businesses.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(onTap: (){
-                    Get.to(()=> BusinessAdmin(
-                      businessName: getBusinessController.approvedBusiness.value!.businesses[index].name,
-                      phoneNumber:  getBusinessController.approvedBusiness.value!.businesses[index].phone,
-                      location:  getBusinessController.approvedBusiness.value!.businesses[index].location,
-                      targetArea:  getBusinessController.approvedBusiness.value!.businesses[index].targetMapArea,
-                      description:  getBusinessController.approvedBusiness.value!.businesses[index].description,
-                      businessId:  getBusinessController.approvedBusiness.value!.businesses[index].id,
-                      imagesList:  getBusinessController.approvedBusiness.value!.businesses[index].gallery,
-                      logo:  getBusinessController.approvedBusiness.value!.businesses[index].logo,
-
-                      webUrl:  getBusinessController.approvedBusiness.value!.businesses[index].websiteUrl,
-                      fb:  getBusinessController.approvedBusiness.value!.businesses[index].facebookUrl,
-                      insta:  getBusinessController.approvedBusiness.value!.businesses[index].instagramUrl,
-                      tiktok:  getBusinessController.approvedBusiness.value!.businesses[index].tiktokUrl,
-                      linkdin:  getBusinessController.approvedBusiness.value!.businesses[index].linkedinUrl,
-
-                    ));
-                  },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                      padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                          vertical: 2.0.h),
-                      decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(1.h)
-                      ),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(getBusinessController.approvedBusiness.value!.businesses[index].name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'bold',
-                                fontSize: 14.px,
-                                color: const Color(0xff282827)
-                            ),),
-
-                          Icon(Icons.arrow_forward_ios_sharp,
-                            size: 2.4.h,color:
-                            const Color(0xff191918),)
-                        ],
-                      ),
-                    ),
-                  );
-                },):
-              getBusinessController.isLoading.value?
-              Expanded(
-                child: ListView.builder(shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Shimmer.fromColors(
-                      baseColor: AppColors.baseColor,
-                      highlightColor: AppColors.baseColor,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                        padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                            vertical: 4.0.h),
-                        decoration: BoxDecoration(
-                            color: AppColors.whiteColor,
-                            borderRadius: BorderRadius.circular(1.h)
-                        ),
-
-                      ),
-                    );
-                  },),
-              ):
-              getBusinessController.rejectedBusinesses.value!.businesses.isEmpty?
-              Column(mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [ getVerticalSpace(20.h),
-                  Align(alignment: Alignment.center,
-                    child: Text(
-                      "No Rejected Business",
-                      style: TextStyle(
-                        fontSize: 18.px,
-                        color: AppColors.mainColor,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'bold',
-                      ),
-                    ),
-                  ),
-                ],
-              ):
-              ListView.builder(shrinkWrap: true,
-                padding: EdgeInsets.symmetric(horizontal: 2.4.h),
-                itemCount: getBusinessController.rejectedBusinesses.value!.businesses.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(onTap: (){
-                    Get.to(()=> BusinessAdmin(
-                      businessName: getBusinessController.rejectedBusinesses.value!.businesses[index].name,
-                      phoneNumber:  getBusinessController.rejectedBusinesses.value!.businesses[index].phone,
-                      location:  getBusinessController.rejectedBusinesses.value!.businesses[index].location,
-                      targetArea:  getBusinessController.rejectedBusinesses.value!.businesses[index].targetMapArea,
-                      description:  getBusinessController.rejectedBusinesses.value!.businesses[index].description,
-                      businessId:  getBusinessController.rejectedBusinesses.value!.businesses[index].id,
-                      imagesList:  getBusinessController.rejectedBusinesses.value!.businesses[index].gallery,
-                      logo:  getBusinessController.rejectedBusinesses.value!.businesses[index].logo,
-
-                      webUrl:  getBusinessController.rejectedBusinesses.value!.businesses[index].websiteUrl,
-                      fb:  getBusinessController.rejectedBusinesses.value!.businesses[index].facebookUrl,
-                      insta:  getBusinessController.rejectedBusinesses.value!.businesses[index].instagramUrl,
-                      tiktok:  getBusinessController.rejectedBusinesses.value!.businesses[index].tiktokUrl,
-                      linkdin:  getBusinessController.rejectedBusinesses.value!.businesses[index].linkedinUrl,
-
-                    ));
-                  },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                      padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                          vertical: 2.0.h),
-                      decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(1.h)
-                      ),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(getBusinessController.rejectedBusinesses.value!.businesses[index].name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'bold',
-                                fontSize: 14.px,
-                                color: const Color(0xff282827)
-                            ),),
-
-                          Icon(Icons.arrow_forward_ios_sharp,
-                            size: 2.4.h,color:
-                            const Color(0xff191918),)
-                        ],
-                      ),
-                    ),
-                  );
-                },)
-
+                                      Get.to(() => BusinessAdmin(
+                                            businessName: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .name,
+                                            phoneNumber: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .phone,
+                                            location: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .location,
+                                            targetArea: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .targetMapArea,
+                                            description: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .description,
+                                            businessId: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .id,
+                                            imagesList: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .gallery,
+                                            logo: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .logo,
+                                            webUrl: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .websiteUrl,
+                                            fb: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .facebookUrl,
+                                            insta: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .instagramUrl,
+                                            tiktok: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .tiktokUrl,
+                                            linkdin: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .linkedinUrl,
+                                            title: getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .status,
+                                        ownerId: getBusinessController
+                                            .pendingBusiness
+                                            .value!
+                                            .businesses[index]
+                                            .owner.id,
+                                          ));
+                                    },
+                                    child: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 1.2.h),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 1.6.h, vertical: 2.0.h),
+                                      decoration: BoxDecoration(
+                                          color: AppColors.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(1.h)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            getBusinessController
+                                                .pendingBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .name,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontFamily: 'bold',
+                                                fontSize: 14.px,
+                                                color: const Color(0xff282827)),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios_sharp,
+                                            size: 2.4.h,
+                                            color: const Color(0xff191918),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                  : isSelected.value == 'Approved'
+                      ? getBusinessController.isLoading.value
+                          ? Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 2.4.h),
+                                itemCount: 10,
+                                itemBuilder: (context, index) {
+                                  return Shimmer.fromColors(
+                                    baseColor: AppColors.baseColor,
+                                    highlightColor: AppColors.baseColor,
+                                    child: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 1.2.h),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 1.6.h, vertical: 4.0.h),
+                                      decoration: BoxDecoration(
+                                          color: AppColors.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(1.h)),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : getBusinessController
+                                  .approvedBusiness.value!.businesses.isEmpty
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    getVerticalSpace(20.h),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Text(
+                                        "No Approved Business",
+                                        style: TextStyle(
+                                          fontSize: 18.px,
+                                          color: AppColors.mainColor,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'bold',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Expanded(
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 2.4.h),
+                                    itemCount: getBusinessController
+                                        .approvedBusiness
+                                        .value!
+                                        .businesses
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Get.to(() => BusinessAdmin(
+                                                businessName:
+                                                    getBusinessController
+                                                        .approvedBusiness
+                                                        .value!
+                                                        .businesses[index]
+                                                        .name,
+                                                phoneNumber: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .phone,
+                                                location: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .location,
+                                                targetArea: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .targetMapArea,
+                                                description: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .description,
+                                                businessId: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .id,
+                                                imagesList: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .gallery,
+                                                logo: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .logo,
+                                                webUrl: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .websiteUrl,
+                                                fb: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .facebookUrl,
+                                                insta: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .instagramUrl,
+                                                tiktok: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .tiktokUrl,
+                                                linkdin: getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .linkedinUrl,
+                                            title: getBusinessController
+                                                .approvedBusiness
+                                                .value!
+                                                .businesses[index]
+                                                .status, ownerId: getBusinessController
+                                              .approvedBusiness
+                                              .value!
+                                              .businesses[index]
+                                              .owner.id,
+                                
+                                
+                                              ));
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 1.2.h),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 1.6.h, vertical: 2.0.h),
+                                          decoration: BoxDecoration(
+                                              color: AppColors.whiteColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(1.h)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                getBusinessController
+                                                    .approvedBusiness
+                                                    .value!
+                                                    .businesses[index]
+                                                    .name,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'bold',
+                                                    fontSize: 14.px,
+                                                    color:
+                                                        const Color(0xff282827)),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_forward_ios_sharp,
+                                                size: 2.4.h,
+                                                color: const Color(0xff191918),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                              )
+                      : getBusinessController.isLoading.value
+                          ? Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 2.4.h),
+                                itemCount: 10,
+                                itemBuilder: (context, index) {
+                                  return Shimmer.fromColors(
+                                    baseColor: AppColors.baseColor,
+                                    highlightColor: AppColors.baseColor,
+                                    child: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 1.2.h),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 1.6.h, vertical: 4.0.h),
+                                      decoration: BoxDecoration(
+                                          color: AppColors.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(1.h)),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : getBusinessController
+                                  .rejectedBusinesses.value!.businesses.isEmpty
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    getVerticalSpace(20.h),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "No Rejected Business",
+                                        style: TextStyle(
+                                          fontSize: 18.px,
+                                          color: AppColors.mainColor,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'bold',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Expanded(
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 2.4.h),
+                                    itemCount: getBusinessController
+                                        .rejectedBusinesses
+                                        .value!
+                                        .businesses
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Get.to(() => BusinessAdmin(
+                                                businessName:
+                                                    getBusinessController
+                                                        .rejectedBusinesses
+                                                        .value!
+                                                        .businesses[index]
+                                                        .name,
+                                                phoneNumber: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .phone,
+                                                location: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .location,
+                                                targetArea: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .targetMapArea,
+                                                description: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .description,
+                                                businessId: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .id,
+                                                imagesList: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .gallery,
+                                                logo: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .logo,
+                                                webUrl: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .websiteUrl,
+                                                fb: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .facebookUrl,
+                                                insta: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .instagramUrl,
+                                                tiktok: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .tiktokUrl,
+                                                linkdin: getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .linkedinUrl,
+                                            title: getBusinessController
+                                                .rejectedBusinesses
+                                                .value!
+                                                .businesses[index]
+                                                .status,
+                                            ownerId: getBusinessController
+                                                .rejectedBusinesses
+                                                .value!
+                                                .businesses[index]
+                                                .owner.id,
+                                              ));
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 1.2.h),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 1.6.h, vertical: 2.0.h),
+                                          decoration: BoxDecoration(
+                                              color: AppColors.whiteColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(1.h)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                getBusinessController
+                                                    .rejectedBusinesses
+                                                    .value!
+                                                    .businesses[index]
+                                                    .name,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'bold',
+                                                    fontSize: 14.px,
+                                                    color:
+                                                        const Color(0xff282827)),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_forward_ios_sharp,
+                                                size: 2.4.h,
+                                                color: const Color(0xff191918),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                              )
             ],
           ),
         ),
       ),
     );
   }
-
 }

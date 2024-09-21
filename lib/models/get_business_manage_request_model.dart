@@ -97,8 +97,8 @@ class Business {
   String instagramUrl;
   String linkedinUrl;
   String tiktokUrl;
-  int v;
   DateTime createdAt;
+  int v;
 
   Business({
     required this.id,
@@ -116,8 +116,8 @@ class Business {
     required this.instagramUrl,
     required this.linkedinUrl,
     required this.tiktokUrl,
-    required this.v,
     required this.createdAt,
+    required this.v,
   });
 
   Business copyWith({
@@ -136,8 +136,8 @@ class Business {
     String? instagramUrl,
     String? linkedinUrl,
     String? tiktokUrl,
-    int? v,
     DateTime? createdAt,
+    int? v,
   }) =>
       Business(
         id: id ?? this.id,
@@ -155,8 +155,8 @@ class Business {
         instagramUrl: instagramUrl ?? this.instagramUrl,
         linkedinUrl: linkedinUrl ?? this.linkedinUrl,
         tiktokUrl: tiktokUrl ?? this.tiktokUrl,
-        v: v ?? this.v,
         createdAt: createdAt ?? this.createdAt,
+        v: v ?? this.v,
       );
 
   factory Business.fromJson(Map<String, dynamic> json) => Business(
@@ -175,8 +175,8 @@ class Business {
     instagramUrl: json["instagramUrl"],
     linkedinUrl: json["linkedinUrl"],
     tiktokUrl: json["tiktokUrl"],
-    v: json["__v"],
     createdAt: DateTime.parse(json["createdAt"]),
+    v: json["__v"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -195,8 +195,8 @@ class Business {
     "instagramUrl": instagramUrl,
     "linkedinUrl": linkedinUrl,
     "tiktokUrl": tiktokUrl,
-    "__v": v,
     "createdAt": createdAt.toIso8601String(),
+    "__v": v,
   };
 }
 

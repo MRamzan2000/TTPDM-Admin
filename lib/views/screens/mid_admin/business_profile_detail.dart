@@ -1,13 +1,26 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_business_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_design_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_design_request_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_fcm_send_notification_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/image_picker_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/poster_controller.dart';
+import 'package:ttpdm_admin/controller/utils/alert_box.dart';
+import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 
-import '../../../controller/custom_widgets/app_colors.dart';
-import '../../../controller/custom_widgets/custom_text_styles.dart';
-
-class BusinessProfile extends StatelessWidget {
+class BusinessProfile extends StatefulWidget {
   final String title;
   final String businessName;
   final String phoneNumber;
@@ -22,7 +35,11 @@ class BusinessProfile extends StatelessWidget {
   final String insta;
   final String tiktok;
   final String linkdin;
-  BusinessProfile({
+  final String ownerId;
+  final String status;
+  final String id;
+  final String currentUserName;
+  const BusinessProfile({
     super.key,
     required this.businessName,
     required this.phoneNumber,
@@ -36,12 +53,53 @@ class BusinessProfile extends StatelessWidget {
     required this.fb,
     required this.insta,
     required this.tiktok,
-    required this.linkdin, required this.title,
+    required this.linkdin,
+    required this.title,
+    required this.ownerId,
+    required this.status,
+    required this.id,
+    required this.currentUserName,
   });
+
+  @override
+  State<BusinessProfile> createState() => _BusinessProfileState();
+}
+
+class _BusinessProfileState extends State<BusinessProfile> {
   final AddDesignController addDesignController =
       Get.put(AddDesignController());
 
   final List<String> items = ["View Changes", "Re-upload", "Delete"];
+  final List<String> images = [
+    'assets/pngs/uploaddesign1.png',
+    'assets/pngs/uploaddesign2.png',
+    'assets/pngs/uploaddesign3.png',
+  ];
+
+  late GetBusinessController getBusinessController;
+  late PosterController posterController;
+  late DesignRequestController designRequestController;
+
+  RxString token = "".obs;
+  RxString id = "".obs;
+  late GetFcmTokenSendNotificationController
+      getFcmTokenSendNotificationController;
+  late ImagePickerController imagePickerController;
+  @override
+  void initState() {
+    super.initState();
+    getBusinessController = Get.put(GetBusinessController(context: context));
+    getFcmTokenSendNotificationController =
+        Get.put(GetFcmTokenSendNotificationController(context: context));
+    imagePickerController = Get.put(ImagePickerController());
+    posterController = Get.put(PosterController(context: context));
+    designRequestController = Get.put(DesignRequestController());
+    posterController.fetchPosters(
+        context: context, loading: posterController.allPosters.value == null);
+    token.value = MySharedPreferences.getString(authToken);
+    id.value = MySharedPreferences.getString(userId);
+    log("Auth Token is that :${widget.status}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +119,7 @@ class BusinessProfile extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          businessName,
+          widget.businessName,
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -78,33 +136,6 @@ class BusinessProfile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 getVerticalSpace(2.h),
-                // Container(
-                //   padding:
-                //       EdgeInsets.symmetric(horizontal: 1.6.h, vertical: 2.0.h),
-                //   decoration: BoxDecoration(
-                //     color: AppColors.whiteColor,
-                //     borderRadius: BorderRadius.circular(1.h),
-                //   ),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Text(
-                //         'Business Profile Details',
-                //         style: TextStyle(
-                //           fontWeight: FontWeight.w500,
-                //           fontFamily: 'bold',
-                //           fontSize: 14.px,
-                //           color: const Color(0xff282827),
-                //         ),
-                //       ),
-                //       Icon(
-                //         Icons.keyboard_arrow_up,
-                //         size: 2.6.h,
-                //         color: const Color(0xff191918),
-                //       )
-                //     ],
-                //   ),
-                // ),
                 getVerticalSpace(1.6.h),
                 Align(
                   alignment: Alignment.topCenter,
@@ -113,15 +144,7 @@ class BusinessProfile extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 4.2.h,
-                        backgroundImage: NetworkImage(logo),
-                        // child: Text(
-                        //   'Logo',
-                        //   style: TextStyle(
-                        //       fontWeight: FontWeight.w700,
-                        //       fontFamily: 'bold',
-                        //       fontSize: 20.px,
-                        //       color: const Color(0xffC3C3C2)),
-                        // ),
+                        backgroundImage: NetworkImage(widget.logo),
                       ),
                       getVerticalSpace(.8.h),
                       Text(
@@ -147,7 +170,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  businessName,
+                  widget.businessName,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -167,7 +190,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  phoneNumber,
+                  widget.phoneNumber,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -187,7 +210,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  location,
+                  widget.location,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -207,7 +230,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  targetArea,
+                  widget.targetArea,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -227,7 +250,7 @@ class BusinessProfile extends StatelessWidget {
                 ),
                 getVerticalSpace(.8.h),
                 Text(
-                  description,
+                  widget.description,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontFamily: 'bold',
@@ -259,7 +282,7 @@ class BusinessProfile extends StatelessWidget {
                   height: 30.3.h,
                   child: GridView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: imagesList.length,
+                    itemCount: widget.imagesList.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisSpacing: 2.h,
@@ -276,7 +299,7 @@ class BusinessProfile extends StatelessWidget {
                               color: AppColors.whiteColor,
                               image: DecorationImage(
                                   image: NetworkImage(
-                                    imagesList[index],
+                                    widget.imagesList[index],
                                   ),
                                   fit: BoxFit.cover),
                             ),
@@ -287,289 +310,339 @@ class BusinessProfile extends StatelessWidget {
                   ),
                 ),
                 getVerticalSpace(2.4.h),
-                Text(
-                  'Upload Design',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'bold',
-                    fontSize: 14.px,
-                    color: AppColors.mainColor,
-                  ),
-                ),
-                getVerticalSpace(1.6.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Stack(children: [
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: .5.h, vertical: .5.h),
-                        height: 13.3.h,
-                        width: 14.h,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(1.h),
-                            color: AppColors.whiteColor,
-                            boxShadow: const [
-                              BoxShadow(
-                                offset: Offset(0, 1),
-                                spreadRadius: 0,
-                                blurRadius: 8,
-                                color: Color(0xffFFE4EA),
-                              ),
-                            ],
-                            image: const DecorationImage(
-                                image: AssetImage(
-                                    'assets/pngs/uploaddesign1.png'))),
-                      ),
-                      Positioned(
-                        top: 1.h,
-                        right: 2.h,
-                        child: GestureDetector(
-                          onTapDown: (TapDownDetails details) {
-                            _showPopupMenu(context, details.globalPosition, 0);
-                          },
-                          child: SizedBox(
-                            height: 2.5.h,
-                            width: 2.5.h,
-                            child: Icon(
-                              Icons.more_vert,
-                              color: AppColors.mainColor,
-                              size: 3.5.h,
-                            ),
-                          ),
+                widget.title == "pending"
+                    ? const SizedBox.shrink()
+                    : Text(
+                        'Upload Design',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'bold',
+                          fontSize: 14.px,
+                          color: AppColors.mainColor,
                         ),
                       ),
-                    ]),
-                    Stack(
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: .5.h, vertical: .5.h),
-                          height: 13.3.h,
-                          width: 14.h,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(1.h),
-                              color: AppColors.whiteColor,
-                              boxShadow: const [
-                                BoxShadow(
-                                  offset: Offset(0, 1),
-                                  spreadRadius: 0,
-                                  blurRadius: 8,
-                                  color: Color(0xffFFE4EA),
-                                ),
-                              ],
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/pngs/uploaddesign2.png'))),
-                        ),
-                        Positioned(
-                          top: 1.h,
-                          right: 2.h,
-                          child: GestureDetector(
-                            onTapDown: (TapDownDetails details) {
-                              _showPopupMenu(
-                                  context, details.globalPosition, 1);
-                            },
-                            child: SizedBox(
-                              height: 2.5.h,
-                              width: 2.5.h,
-                              child: Icon(
-                                Icons.more_vert,
-                                color: AppColors.mainColor,
-                                size: 3.5.h,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Stack(
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: .5.h, vertical: .5.h),
-                          height: 13.3.h,
-                          width: 14.h,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(1.h),
-                              color: AppColors.whiteColor,
-                              boxShadow: const [
-                                BoxShadow(
-                                  offset: Offset(0, 1),
-                                  spreadRadius: 0,
-                                  blurRadius: 8,
-                                  color: Color(0xffFFE4EA),
-                                ),
-                              ],
-                              image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/pngs/uploaddesign3.png'))),
-                        ),
-                        Positioned(
-                          top: 1.h,
-                          right: 2.h,
-                          child: GestureDetector(
-                            onTapDown: (TapDownDetails details) {
-                              _showPopupMenu(
-                                  context, details.globalPosition, 2);
-                            },
-                            child: SizedBox(
-                              height: 2.5.h,
-                              width: 2.5.h,
-                              child: Icon(
-                                Icons.more_vert,
-                                color: AppColors.mainColor,
-                                size: 3.5.h,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
                 getVerticalSpace(1.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                        height: 3.h,
-                        width: 7.h,
-                        child: const Image(
-                            image: AssetImage('assets/pngs/like.png'))),
-                    SizedBox(
-                        height: 3.h,
-                        width: 7.h,
-                        child: const Image(
-                            image: AssetImage('assets/pngs/dislike.png'))),
-                    SizedBox(
-                        height: 3.h,
-                        width: 7.h,
-                        child: const Image(
-                            image: AssetImage('assets/pngs/edit.png'))),
-                    getHorizentalSpace(1.h)
-                  ],
-                ),
-                getVerticalSpace(2.h),
-                GestureDetector(
-                  onTap: () {
-                    addDesignController.pickMedia();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        height: 15.h,
-                        width: 15.h,
-                        decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(2.h),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              size: 3.h,
-                              Icons.add,
-                              color: AppColors.mainColor,
-                            ),
-                            Text(
-                              'Upload',
-                              style: CustomTextStyles.buttonTextStyle
-                                  .copyWith(color: AppColors.mainColor),
-                            )
-                          ],
-                        ),
+                widget.title == "pending"
+                    ? const SizedBox.shrink()
+                    : Obx(
+                        () => posterController.isLoading.value
+                            ? SizedBox(
+                                height: 14.h,
+                                child: GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount:
+                                        3, // Number of items in a row
+                                    crossAxisSpacing:
+                                        8.0, // Space between items horizontally
+                                    mainAxisSpacing:
+                                        8.0, // Space between items vertically
+                                    childAspectRatio:
+                                        1, // Aspect ratio for each item
+                                  ),
+                                  itemCount: 4,
+                                  itemBuilder: (context, index) {
+                                    return Shimmer.fromColors(
+                                      baseColor: AppColors.baseColor,
+                                      highlightColor: AppColors.highlightColor,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          color: Colors.white,
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              offset: Offset(0, 1),
+                                              spreadRadius: 0,
+                                              blurRadius: 8,
+                                              color: Color(0xffFFE4EA),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : posterController.allPosters.value!.designs.isEmpty
+                                ? Column(
+                                    children: [
+                                      Text(
+                                        "No Design Available",
+                                        style: CustomTextStyles.buttonTextStyle
+                                            .copyWith(
+                                                color: AppColors.mainColor),
+                                      )
+                                    ],
+                                  )
+                                : Container(
+                                    padding: EdgeInsets.all(1.h),
+                                    decoration: BoxDecoration(
+                                        color: AppColors.baseColor,
+                                        borderRadius:
+                                            BorderRadius.circular(2.h)),
+                                    height: 30.h,
+                                    child: GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount:
+                                            3, // Number of items in a row
+                                        crossAxisSpacing:
+                                            8.0, // Space between items horizontally
+                                        mainAxisSpacing:
+                                            8.0, // Space between items vertically
+                                        childAspectRatio:
+                                            1, // Aspect ratio for each item
+                                      ),
+                                      itemCount: posterController
+                                          .allPosters.value!.designs.length,
+                                      itemBuilder: (context, index) {
+                                        return Stack(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Expanded(
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8.0,
+                                                        vertical: 8.0),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.0),
+                                                      color: Colors.white,
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                          offset: Offset(0, 1),
+                                                          spreadRadius: 0,
+                                                          blurRadius: 8,
+                                                          color:
+                                                              Color(0xffFFE4EA),
+                                                        ),
+                                                      ],
+                                                      image: DecorationImage(
+                                                        image: NetworkImage(
+                                                            posterController
+                                                                .allPosters
+                                                                .value!
+                                                                .designs[index]
+                                                                .fileUrl),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                posterController
+                                                            .allPosters
+                                                            .value!
+                                                            .designs[index]
+                                                            .likeCount >
+                                                        0
+                                                    ? SizedBox(
+                                                        height: 3.h,
+                                                        width: 7.h,
+                                                        child: const Image(
+                                                            image: AssetImage(
+                                                                'assets/pngs/like.png')))
+                                                    : posterController
+                                                                .allPosters
+                                                                .value!
+                                                                .designs[index]
+                                                                .dislikeCount >
+                                                            0
+                                                        ? SizedBox(
+                                                            height: 3.h,
+                                                            width: 7.h,
+                                                            child: const Image(
+                                                                image: AssetImage(
+                                                                    'assets/pngs/dislike.png')))
+                                                        : const SizedBox
+                                                            .shrink(),
+                                              ],
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
                       ),
+                getVerticalSpace(2.h),
+
+                  widget.title == "pending"
+                      ?const SizedBox.shrink():
+                       GestureDetector(
+                          onTap: () {
+                            imagePickerController
+                                .pickImage(ImageSource.gallery);
+                          },
+                          child: Obx(() =>
+                             Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                imagePickerController.image.value == null
+                                    ? Container(
+                                        alignment: Alignment.center,
+                                        height: 15.h,
+                                        width: 15.h,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(2.h),
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              size: 3.h,
+                                              Icons.add,
+                                              color: AppColors.mainColor,
+                                            ),
+                                            Text(
+                                              'Upload',
+                                              style: CustomTextStyles
+                                                  .buttonTextStyle
+                                                  .copyWith(
+                                                      color: AppColors.mainColor),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : Container(
+                                        alignment: Alignment.center,
+                                        height: 15.h,
+                                        width: 15.h,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.whiteColor,
+                                            borderRadius:
+                                                BorderRadius.circular(2.h),
+                                            image: DecorationImage(
+                                                image: FileImage(File(
+                                                    imagePickerController
+                                                        .image.value!.path)),
+                                                fit: BoxFit.cover)),
+                                      ),
+                              ],
+                            ),
+                          ),
+                        ),
+                widget.title == "pending"
+                    ? const SizedBox.shrink()
+                    : getVerticalSpace(2.h),
+                widget.title == "pending"
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: customElevatedButton(
+                                onTap: () {
+                                  openRejectReason(context,
+                                      token: token.value,
+                                      businessId: widget.businessId,
+                                      ownerId: widget.ownerId,
+                                      id: id.value);
+                                },
+                                horizentalPadding: 0,
+                                title: Text(
+                                  "Reject",
+                                  style: CustomTextStyles.buttonTextStyle,
+                                ),
+                                bgColor: const Color(0xff999999)),
+                          ),
+                          getHorizentalSpace(1.8.h),
+                          Expanded(
+                            child: Obx(
+                              () => customElevatedButton(
+                                  onTap: () {
+                                    getBusinessController
+                                        .changeBusinessStatus(
+                                            token: token.value,
+                                            businessId: widget.businessId,
+                                            status: "accepted",
+                                            rejectionReason: "Approved")
+                                        .then(
+                                      (value) {
+                                        getFcmTokenSendNotificationController
+                                            .fetchFcmToken(
+                                                loading:
+                                                    getFcmTokenSendNotificationController
+                                                            .fcmToken.value ==
+                                                        null,
+                                                userId: widget.ownerId,
+                                                token: token.value,
+                                                title: "Congratulation",
+                                                message:
+                                                    "Business Was Approved",
+                                                info1: "id ${id.value}",
+                                                info2: "");
+                                      },
+                                    );
+                                    log("businessId :${widget.businessId}");
+                                  },
+                                  horizentalPadding: 0,
+                                  title: getBusinessController
+                                          .approvedLoader.value
+                                      ? spinkit
+                                      : Text(
+                                          "Approve",
+                                          style:
+                                              CustomTextStyles.buttonTextStyle,
+                                        ),
+                                  bgColor: AppColors.mainColor),
+                            ),
+                          )
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+                getVerticalSpace(3.h),
+             widget.title=="pending"?const SizedBox.shrink():   Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      customElevatedButton(
+                          onTap: () {
+                            if (imagePickerController.image.value == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Please select image")));
+                            } else {
+                              designRequestController.uploadProfileImage(
+                                  token: token.value,
+                                  designs: File(
+                                      imagePickerController.image.value!.path),
+                                  context: context).then((value) {
+                                getFcmTokenSendNotificationController.fetchFcmToken(
+                                    loading: getFcmTokenSendNotificationController.fcmToken.value==null,
+                                    userId: widget.ownerId,
+                                    token: token.value,
+                                    title:"Uploaded design" ,
+                                    message: "${widget.currentUserName}Uploaded design",
+                                    info1: id.value,
+                                    info2: "");
+                                  },);
+                            }
+                          },
+                          bgColor: AppColors.mainColor,
+                          title: designRequestController.uploading.value
+                              ? spinkit
+                              : Text(
+                                  "Upload",
+                                  style: CustomTextStyles.buttonTextStyle
+                                      .copyWith(color: AppColors.whiteColor),
+                                ))
                     ],
                   ),
                 ),
-                getVerticalSpace(2.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: customElevatedButton(
-                          horizentalPadding: 0,
-                          title: Text(
-                            "Reject",
-                            style: CustomTextStyles.buttonTextStyle,
-                          ),
-                          bgColor: const Color(0xff999999)),
-                    ),
-                    getHorizentalSpace(1.8.h),
-                    Expanded(
-                      child: customElevatedButton(
-                          horizentalPadding: 0,
-                          title: Text(
-                            "Approve",
-                            style: CustomTextStyles.buttonTextStyle,
-                          ),
-                          bgColor: AppColors.mainColor),
-                    )
-                  ],
-                ),
-                getVerticalSpace(3.h),
+                getVerticalSpace(2.h)
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  // List<PopupMenuEntry<String>> _buildPopupMenuItems(List<String> items) {
-  //   List<PopupMenuEntry<String>> menuItems = [];
-  //   for (int i = 0; i < items.length; i++) {
-  //     menuItems.add(
-  //       PopupMenuItem<String>(
-  //         value: items[i],
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(items[i]),
-  //             if (i < items.length - 1) const Divider(thickness: 1),
-  //           ],
-  //         ),
-  //       ),
-  //     );
-  //   }
-  //   return menuItems;
-  // }
-
-  void _showPopupMenu(BuildContext context, Offset position, int index) async {
-    final selectedValue = await showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        position.dx,
-        position.dy,
-        position.dx,
-        position.dy,
-      ),
-      items: _buildPopupMenuItems1(items),
-    );
-    if (selectedValue != null) {}
-  }
-
-  List<PopupMenuEntry<String>> _buildPopupMenuItems1(List<String> items) {
-    List<PopupMenuEntry<String>> menuItems = [];
-    for (int i = 0; i < items.length; i++) {
-      menuItems.add(
-        PopupMenuItem<String>(
-          value: items[i],
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(items[i]),
-              if (i < items.length - 1) const Divider(thickness: 1),
-            ],
-          ),
-        ),
-      );
-    }
-    return menuItems;
   }
 }

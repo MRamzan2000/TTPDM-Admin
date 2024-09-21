@@ -1,28 +1,71 @@
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_campaign_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_design_controller.dart';
+import 'package:ttpdm_admin/controller/getx_controllers/get_fcm_send_notification_controller.dart';
 import 'package:ttpdm_admin/controller/utils/alert_box.dart';
+import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
 
 
-import '../../../controller/custom_widgets/app_colors.dart';
-import '../../../controller/getx_controllers/get_design_controller.dart';
+class CampaignDetails  extends StatefulWidget {
+  final String campaignId;
+  final String businessName;
+  final String campaignName;
+  final String campaignDescription;
+  final String selectedPoster;
+  final List campaignPlatForms;
+  final String startDate;
+  final String endDate;
+  final String startTime;
+  final String endTime;
+  final String token;
+  final String status;
+  final String id;
+  final String ownerID;
+  final String name;
+   const CampaignDetails ({
+     super.key,
+     required this.campaignId,
+     required this.campaignName,
+     required this.campaignDescription,
+     required this.selectedPoster,
+     required this.campaignPlatForms,
+     required this.startDate,
+     required this.endDate,
+     required this.businessName,
+     required this.token, required this.status, required this.startTime, required this.endTime, required this.id, required this.name, required this.ownerID
+   });
 
+  @override
+  State<CampaignDetails> createState() => _CampaignDetailsState();
+}
 
-class CampaignDetails  extends StatelessWidget {
-   CampaignDetails ({super.key});
+class _CampaignDetailsState extends State<CampaignDetails> {
   final List<String> items = [
-    'Edit',
-    'Delete',
-    'View Campaign ',
+    'Cancel',
   ];
-   final AddDesignController addDesignController =Get.put(AddDesignController());
 
+   final AddDesignController addDesignController =Get.put(AddDesignController());
+   late AddCampaignController addCampaignController ;
+  late GetFcmTokenSendNotificationController
+  getFcmTokenSendNotificationController;
+@override
+  void initState() {
+    super.initState();
+    addCampaignController =Get.put(AddCampaignController(context: context));
+    getFcmTokenSendNotificationController =
+        Get.put(GetFcmTokenSendNotificationController(context: context));
+}
    @override
   Widget build(BuildContext context) {
     String range = '';
-
     return  Scaffold(
       appBar: AppBar(
         leading: GestureDetector(onTap: (){
@@ -44,17 +87,7 @@ class CampaignDetails  extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: AppColors.mainColor),
         ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 1.h),
-            child: PopupMenuButton<String>(
-              itemBuilder: (BuildContext context) {
-                return _buildPopupMenuItems(items);
-              },
-              icon: const Icon(Icons.more_vert),
-            ),
-          ),
-        ],
+
       ),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -114,7 +147,7 @@ class CampaignDetails  extends StatelessWidget {
                                 fontSize: 13.px,
                                 fontFamily: 'regular'
                               )),
-                              TextSpan(text: 'Pending: ',style: TextStyle(
+                              TextSpan(text: '${widget.status}: ',style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: const Color(0xff999999),
                                 fontSize: 13.px,
@@ -128,7 +161,7 @@ class CampaignDetails  extends StatelessWidget {
                           height: 24.h,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(1.h)
-                              ,image: const DecorationImage(image: AssetImage('assets/pngs/mainposter.png'),fit: BoxFit.cover)
+                              ,image:  DecorationImage(image: NetworkImage(widget.selectedPoster),fit: BoxFit.cover)
                           ),
 
                         ),
@@ -143,7 +176,7 @@ class CampaignDetails  extends StatelessWidget {
                             color: const Color(0xff191918)
                         ),),
                         getVerticalSpace(.8.h),
-                        Text('Business name',style: TextStyle(
+                        Text(widget.businessName,style: TextStyle(
                             fontSize: 14.px,
                             fontFamily: 'bold',
                             fontWeight: FontWeight.w500,
@@ -159,7 +192,7 @@ class CampaignDetails  extends StatelessWidget {
                             color: const Color(0xff191918)
                         ),),
                         getVerticalSpace(.8.h),
-                        Text('Ads Name',style: TextStyle(
+                        Text(widget.campaignName,style: TextStyle(
                             fontSize: 14.px,
                             fontFamily: 'bold',
                             fontWeight: FontWeight.w500,
@@ -176,29 +209,13 @@ class CampaignDetails  extends StatelessWidget {
                             color: const Color(0xff191918)
                         ),),
                         getVerticalSpace(.8.h),
-                        Text('What’s the business name?',style: TextStyle(
+                        Text(widget.businessName,style: TextStyle(
                             fontSize: 14.px,
                             fontFamily: 'bold',
                             fontWeight: FontWeight.w500,
                             color: const Color(0xff6E6E6D)
                         ),),
-                        getVerticalSpace(1.2.h),
-                        const Divider(color: Color(0xff6E6E6D),
-                          thickness: 1,),
-                        getVerticalSpace(1.2.h),
-                        Text('What’s your website URL?',style: TextStyle(
-                            fontSize: 14.px,
-                            fontFamily: 'bold',
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xff191918)
-                        ),),
-                        getVerticalSpace(.8.h),
-                        Text('www.com',style: TextStyle(
-                            fontSize: 14.px,
-                            fontFamily: 'bold',
-                            fontWeight: FontWeight.w500,
-                            color: const  Color(0xff007AFF)
-                        ),),
+
                         getVerticalSpace(1.2.h),
                         const Divider(color: Color(0xff6E6E6D),
                           thickness: 1,),
@@ -209,7 +226,7 @@ class CampaignDetails  extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             color: const Color(0xff191918)
                         ),),
-                        Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',style: TextStyle(
+                        Text(widget.campaignDescription,style: TextStyle(
                             fontSize: 12.px,
                             fontFamily: 'bold',
                             fontWeight: FontWeight.w400,
@@ -224,12 +241,23 @@ class CampaignDetails  extends StatelessWidget {
                             color: const Color(0xff191918)
                         ),),
                         getVerticalSpace(.8.h),
-                        Text('Google    Facebook    Instagram',style: TextStyle(
-                            fontSize: 14.px,
-                            fontFamily: 'bold',
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.mainColor
-                        ),),
+                    Wrap(
+                      spacing: 8.0, // Horizontal spacing between items
+                      runSpacing: 4.0, // Vertical spacing between lines
+                      children: widget.campaignPlatForms.map((platform) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            platform,
+                            style: TextStyle(
+                              fontSize: 14, // Flutter uses logical pixels; adjust as needed
+                              fontFamily: 'bold',
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.mainColor, // Ensure this is defined in your AppColors
+                            ),
+                          ),
+                        );
+                      }).toList(),),
                         getVerticalSpace(1.2.h),
                         const Divider(color: Color(0xff6E6E6D)),
                         getVerticalSpace(1.2.h),
@@ -254,7 +282,7 @@ class CampaignDetails  extends StatelessWidget {
                                 ),
                                 SizedBox(width: .8.h),
                                 Text(
-                                  range.isNotEmpty ? range : '25 May 24 TO 04 June 24',
+                                  range.isNotEmpty ? range : widget.startDate+widget.endDate,
                                   style: TextStyle(
                                     color: range.isNotEmpty ? AppColors.blackColor:AppColors.mainColor,
                                     fontWeight: FontWeight.w400,
@@ -278,7 +306,7 @@ class CampaignDetails  extends StatelessWidget {
                         ),),
                         getVerticalSpace(1.2.h),
                         Text(
-                          range.isNotEmpty ? range : 'From 8am to 4pm',
+                          range.isNotEmpty ? range : 'From ${widget.startDate+widget.endDate}',
                           style: TextStyle(
                             color: range.isNotEmpty ? AppColors.blackColor:AppColors.mainColor,
                             fontWeight: FontWeight.w400,
@@ -293,8 +321,8 @@ class CampaignDetails  extends StatelessWidget {
 
                       ],),
                   ),
-                  getVerticalSpace(2.4.h),
-                  Text(
+                  widget.status == "pending"||widget.status == "rejected"
+                      ?const SizedBox.shrink():    Text(
                     'Add Analysis ',
                     style: TextStyle(
                         fontWeight: FontWeight.w400,
@@ -303,8 +331,12 @@ class CampaignDetails  extends StatelessWidget {
                         color: AppColors.mainColor),
                   ),
                   getVerticalSpace(1.6.h),
-                  GestureDetector(onTap: (){
-                    addAnalytics(context);
+                  widget.status == "pending"||widget.status == "rejected"
+                      ?const SizedBox.shrink():    GestureDetector(onTap: (){
+                    addAnalytics(context,
+                        campaignId: widget.campaignId,
+                        token: widget.token,
+                        ownerId: widget.ownerID, ownerName:widget.name);
                   },
                     child: Container(
                       alignment: Alignment.center,
@@ -323,7 +355,74 @@ class CampaignDetails  extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),getVerticalSpace(4.h)
+                  ),getVerticalSpace(4.h),
+                  widget.status == "rejected" ? Align(alignment: Alignment.bottomCenter,
+                    child: Text("Campaign was Rejected",style: CustomTextStyles.onBoardingHeading.copyWith(fontSize: 16.px),
+                    ),
+                  )
+                      : widget.status == "approved"
+                      ? Align(alignment: Alignment.bottomCenter,
+                    child: Text(
+                      "Campaign was Approved",
+                      style: CustomTextStyles.onBoardingHeading.copyWith(fontSize: 16.px),
+                    ),
+                  ):
+                  Obx(() =>
+                   Row(
+                      children: [
+                        Expanded(
+                          child: customElevatedButton(
+                              onTap: () {
+                                openCampaignStatus(context,
+                                    token: widget.token,
+                                    campaignId:widget.campaignId, ownerId: widget.ownerID);
+                              },
+                              horizentalPadding: 0,
+                              title:addCampaignController.rejectLoader.value?spinkit: Text(
+                                "Reject",
+                                style: CustomTextStyles.buttonTextStyle,
+                              ),
+                              bgColor: const Color(0xff999999)),
+                        ),
+                        getHorizentalSpace(1.8.h),
+                        Expanded(
+                          child: customElevatedButton(
+                                onTap: () {
+                                  log("campaign id :${widget.campaignId}");
+                                  addCampaignController.changeCampaignStatus(
+                                      token: widget.token,
+                                      campaignId: widget.campaignId,
+                                      status: "approved", rejectionReason: "Approved").then((value) {
+                                    getFcmTokenSendNotificationController
+                                        .fetchFcmToken(
+                                        loading:
+                                        getFcmTokenSendNotificationController
+                                            .fcmToken.value ==
+                                            null,
+                                        userId:widget.ownerID ,
+                                        token:widget.token,
+                                        title: "Congratulation",
+                                        message: "Campaign Was Approved",
+                                        info1: "",
+                                        info2: "");
+                                      },);
+                                },
+                                horizentalPadding: 0,
+                                title:addCampaignController.approvedLoader.value?spinkit:
+                                Text(
+                                  "Approve",
+                                  style: CustomTextStyles
+                                      .buttonTextStyle,
+                                ),
+                                bgColor: AppColors.mainColor),
+
+
+
+                        )
+                      ],
+                    ),
+                  ),
+                  getVerticalSpace(2.h)
 
                 ]
             ),
@@ -332,24 +431,4 @@ class CampaignDetails  extends StatelessWidget {
       ),
     );
   }
-  List<PopupMenuEntry<String>> _buildPopupMenuItems(List<String> items) {
-    List<PopupMenuEntry<String>> menuItems = [];
-    for (int i = 0; i < items.length; i++) {
-      menuItems.add(
-        PopupMenuItem<String>(
-          value: items[i],
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(items[i]),
-              if (i < items.length - 1) const Divider(thickness: 1),
-            ],
-          ),
-        ),
-      );
-    }
-    return menuItems;
-  }
-
-
 }

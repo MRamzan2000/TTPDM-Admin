@@ -27,7 +27,6 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
   RxString token = "".obs;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     coinsController = Get.put(CoinsController(context: context));
     allPlansController = Get.put(AllPlansController(context: context));
@@ -50,9 +49,10 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
     final RxString isSelected = 'Coin bundles'.obs;
     return Scaffold(
       appBar: AppBar(
-        leading:  GestureDetector(onTap: (){
-          Get.back();
-        },
+        leading: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
           child: Icon(
             Icons.arrow_back_ios_outlined,
             size: 2.4.h,
@@ -63,7 +63,7 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -444,7 +444,8 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
                                             price: allPlansController
                                                 .getAllPlans[index]!.price,
                                             businessLimit: allPlansController
-                                                .getAllPlans[index]!.businessLimit );
+                                                .getAllPlans[index]!
+                                                .businessLimit);
                                       },
                                       child: Container(
                                         alignment: Alignment.topCenter,
@@ -544,16 +545,18 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
       items: _buildPopupMenuItems1(items),
     );
     if (selectedValue != null) {
+      String id = coinsController.getAllCoinsPlane[index]!.id;
       if (selectedValue == "Delete") {
+        coinsController.getAllCoinsPlane.removeAt(index);
         log(coinsController.getAllCoinsPlane[index]!.id);
         coinsController.deleteCoinsPlan(
             coinsPlanId: coinsController.getAllCoinsPlane[index]!.id,
             token: token.value);
       } else {
-        openCreateNewPlan(context,
-            title: 'Update your plan',
-            coinPlanId: coinsController.getAllCoinsPlane[index]!.id,
-            token: token.value);
+       if(context.mounted){
+         openCreateNewPlan(context,
+             title: 'Update your plan', coinPlanId: id, token: token.value);
+       }
       }
       log(selectedValue);
       // _performAction(selectedValue);

@@ -1,6 +1,8 @@
 
 import 'dart:convert';
 
+import 'package:ttpdm_admin/controller/utils/constants.dart';
+
 GetUserProfileModel getUserProfileModelFromJson(String str) => GetUserProfileModel.fromJson(json.decode(str));
 
 String getUserProfileModelToJson(GetUserProfileModel data) => json.encode(data.toJson());
@@ -8,101 +10,95 @@ String getUserProfileModelToJson(GetUserProfileModel data) => json.encode(data.t
 class GetUserProfileModel {
   Subscription subscription;
   Permissions permissions;
+  dynamic profilePic;
+  dynamic fcmToken;
   String id;
   String fullname;
   String email;
-  String address;
   String phoneNumber;
   String confirmPassword;
   String role;
   List<dynamic> businesses;
-  int v;
   int coinBalance;
-  String fcmToken;
-  String profilePic;
+  int v;
 
   GetUserProfileModel({
     required this.subscription,
     required this.permissions,
+    required this.profilePic,
+    required this.fcmToken,
     required this.id,
     required this.fullname,
     required this.email,
-    required this.address,
     required this.phoneNumber,
     required this.confirmPassword,
     required this.role,
     required this.businesses,
-    required this.v,
     required this.coinBalance,
-    required this.fcmToken,
-    required this.profilePic,
+    required this.v,
   });
 
   GetUserProfileModel copyWith({
     Subscription? subscription,
     Permissions? permissions,
+    dynamic profilePic,
+    dynamic fcmToken,
     String? id,
     String? fullname,
     String? email,
-    String? address,
     String? phoneNumber,
     String? confirmPassword,
     String? role,
     List<dynamic>? businesses,
-    int? v,
     int? coinBalance,
-    String? fcmToken,
-    String? profilePic,
+    int? v,
   }) =>
       GetUserProfileModel(
         subscription: subscription ?? this.subscription,
         permissions: permissions ?? this.permissions,
+        profilePic: profilePic ?? this.profilePic,
+        fcmToken: fcmToken ?? this.fcmToken,
         id: id ?? this.id,
         fullname: fullname ?? this.fullname,
         email: email ?? this.email,
-        address: address ?? this.address,
         phoneNumber: phoneNumber ?? this.phoneNumber,
         confirmPassword: confirmPassword ?? this.confirmPassword,
         role: role ?? this.role,
         businesses: businesses ?? this.businesses,
-        v: v ?? this.v,
         coinBalance: coinBalance ?? this.coinBalance,
-        fcmToken: fcmToken ?? this.fcmToken,
-        profilePic: profilePic ?? this.profilePic,
+        v: v ?? this.v,
       );
 
   factory GetUserProfileModel.fromJson(Map<String, dynamic> json) => GetUserProfileModel(
     subscription: Subscription.fromJson(json["subscription"]),
     permissions: Permissions.fromJson(json["permissions"]),
+    profilePic: json["profilePic"]??placeHolderImage,
+    fcmToken: json["fcmToken"],
     id: json["_id"],
     fullname: json["fullname"],
     email: json["email"],
-    address: json["address"],
     phoneNumber: json["phoneNumber"],
     confirmPassword: json["confirmPassword"],
     role: json["role"],
     businesses: List<dynamic>.from(json["businesses"].map((x) => x)),
-    v: json["__v"],
     coinBalance: json["coinBalance"],
-    fcmToken: json["fcmToken"],
-    profilePic: json["profilePic"],
+    v: json["__v"],
   );
 
   Map<String, dynamic> toJson() => {
     "subscription": subscription.toJson(),
     "permissions": permissions.toJson(),
+    "profilePic": profilePic,
+    "fcmToken": fcmToken,
     "_id": id,
     "fullname": fullname,
     "email": email,
-    "address": address,
     "phoneNumber": phoneNumber,
     "confirmPassword": confirmPassword,
     "role": role,
     "businesses": List<dynamic>.from(businesses.map((x) => x)),
-    "__v": v,
     "coinBalance": coinBalance,
-    "fcmToken": fcmToken,
-    "profilePic": profilePic,
+    "__v": v,
   };
 }
 
@@ -165,30 +161,24 @@ class AdBannerDesigns {
 }
 
 class Subscription {
-  String plan;
   dynamic startDate;
 
   Subscription({
-    required this.plan,
     required this.startDate,
   });
 
   Subscription copyWith({
-    String? plan,
     dynamic startDate,
   }) =>
       Subscription(
-        plan: plan ?? this.plan,
         startDate: startDate ?? this.startDate,
       );
 
   factory Subscription.fromJson(Map<String, dynamic> json) => Subscription(
-    plan: json["plan"],
     startDate: json["startDate"],
   );
 
   Map<String, dynamic> toJson() => {
-    "plan": plan,
-    "startDate": startDate??"",
+    "startDate": startDate,
   };
 }

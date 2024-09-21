@@ -1,11 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_design_request_controller.dart';
+import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
+import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 
+import '../../../controller/getx_controllers/get_business_controller.dart';
+import 'business_profile_detail.dart';
 
 class DesignScreen extends StatefulWidget {
   const DesignScreen({super.key});
@@ -15,29 +22,35 @@ class DesignScreen extends StatefulWidget {
 }
 
 class _DesignScreenState extends State<DesignScreen> {
-  final RxList<String>profilesList=<String>['Business Profile One','Business Profile Two',
-    'Business Profile Three'].obs;
 
   late DesignRequestController designRequestController;
+  final RxString id = "".obs;
+  final RxString name = "".obs;
+  late GetBusinessController getBusinessController;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    getBusinessController = Get.put(GetBusinessController(context: context));
+
     designRequestController = Get.put(DesignRequestController());
+    id.value = MySharedPreferences.getString(userId);
+    name.value = MySharedPreferences.getString(userName);
     designRequestController.fetchDesignRequest(
         loading: designRequestController.getDesignRequest.isEmpty);
+    log("${designRequestController.getDesignRequest.isEmpty}");
 
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -48,47 +61,179 @@ class _DesignScreenState extends State<DesignScreen> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 2.4.h),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.symmetric(horizontal: 2.4.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-
               getVerticalSpace(2.4.h),
-              ListView.builder(shrinkWrap: true,
+              Obx(() => designRequestController.isLoading.value
+                  ? ListView.builder(
+                shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: profilesList.length,
+                itemCount: 5,
                 itemBuilder: (context, index) {
-                  return GestureDetector(onTap: (){
-                    // Get.to(()=> BusinessProfile());
-                  },
+                  return Shimmer.fromColors(
+                    baseColor: AppColors.baseColor,
+                    highlightColor: AppColors.highlightColor,
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 1.2.h),
-                      padding: EdgeInsets.symmetric(horizontal: 1.6.h,
-                          vertical: 2.0.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 1.6.h, vertical: 2.0.h),
                       decoration: BoxDecoration(
                           color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(1.h)
-                      ),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          borderRadius: BorderRadius.circular(1.h)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(profilesList[index],
+                          Text(
+                            "'",
                             style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontFamily: 'bold',
                                 fontSize: 14.px,
-                                color: const Color(0xff282827)
-                            ),),
-                          Icon(Icons.arrow_forward_ios_sharp,
-                            size: 2.4.h,color:
-                            const Color(0xff191918),)
+                                color: const Color(0xff282827)),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            size: 2.4.h,
+                            color: const Color(0xff191918),
+                          )
                         ],
                       ),
                     ),
                   );
-                },),
-            ],),
+                },
+              )
+                  : designRequestController.getDesignRequest.isEmpty
+                  ? const Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("No designs request found")
+                ],
+              )
+                  : Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: designRequestController.getDesignRequest.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Get.to(() => BusinessProfile(
+                          businessName: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business.name
+                          ,
+                          phoneNumber: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .phone,
+                          location:designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .location,
+                          targetArea: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .targetMapArea,
+                          description: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .description,
+                          businessId:designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .id,
+                          imagesList: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .gallery,
+                          logo: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .logo,
+                          webUrl: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .websiteUrl,
+                          fb:designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .facebookUrl,
+                          insta: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .instagramUrl,
+                          tiktok: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .tiktokUrl,
+                          linkdin: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .linkedinUrl,
+                          title: 'new',
+                          ownerId: designRequestController
+                              .getDesignRequest
+                          [index]!
+                              .business
+                              .owner
+                          ,
+                          status: "design",
+                          id: id.value,
+                          currentUserName: name.value,
+                        ));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 1.2.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 1.6.h, vertical: 2.0.h),
+                        decoration: BoxDecoration(
+                            color: AppColors.whiteColor,
+                            borderRadius: BorderRadius.circular(1.h)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              designRequestController.getDesignRequest[index]!.business.name,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'bold',
+                                  fontSize: 14.px,
+                                  color: const Color(0xff282827)),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios_sharp,
+                              size: 2.4.h,
+                              color: const Color(0xff191918),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
 }

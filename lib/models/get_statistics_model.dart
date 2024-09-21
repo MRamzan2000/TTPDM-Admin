@@ -25,7 +25,7 @@ class GetStatisticsModel {
 
   factory GetStatisticsModel.fromJson(Map<String, dynamic> json) => GetStatisticsModel(
     count: json["count"],
-    plan: json["plan"],
+    plan: json["plan"]??"",
   );
 
   Map<String, dynamic> toJson() => {

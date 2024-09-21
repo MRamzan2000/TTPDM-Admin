@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,22 +23,50 @@ class UserProfileController extends GetxController {
           await UserProfileApi(context: context).getUserProfile(id: id);
 
       if (data != null) {
-        // Ensure data is not null and filter out any null values
+        log("User profile data received: ${data.toJson()}");
         userProfile.value = data;
-        log("user data :${userProfile.value}");
       } else {
+        log("No data received");
         userProfile.value = null;
-        log("user data is null:${userProfile.value}");
-
       }
     } catch (e) {
+      log("Exception during fetch: $e");
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Unexpected error occurred ${e.toString()}")));
+          content: Text("Unexpected error occurred: ${e.toString()}"),
+        ));
       }
       userProfile.value = null;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+//update profile
+  RxBool uploading = false.obs;
+  Future<void> uploadProfileImage({
+    required String token,
+    required File profileImage, // Expecting a File object for image
+    required String fullname,
+  }) async {
+    try {
+      uploading.value = true;
+      await UserProfileApi(context: context)
+          .updateProfile(
+        token: token,
+        profileImage: profileImage,
+        fullname: fullname,
+      )
+          .then(
+        (value) {
+          uploading.value = false;
+        },
+      );
+    } catch (e) {
+      log("Unexpected error occurred :${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("unexpected error occurred :${e.toString()}")));
+      uploading.value = false;
     }
   }
 }

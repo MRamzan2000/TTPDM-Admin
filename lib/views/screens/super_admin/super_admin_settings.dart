@@ -5,6 +5,7 @@ import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/utils/alert_box.dart';
+import 'package:ttpdm_admin/views/screens/auth_section/create_new_password.dart';
 import 'package:ttpdm_admin/views/screens/super_admin/stripe_screen.dart';
 import 'package:ttpdm_admin/views/screens/super_admin/tab_bar.dart';
 
@@ -21,7 +22,7 @@ class SuperAdminSettingScreen extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -72,7 +73,7 @@ class SuperAdminSettingScreen extends StatelessWidget {
 
               GestureDetector(
                 onTap: () {
-                  
+                  Get.to(()=>const CreateNewPassword());
                 },
                 child: Text(
                   'Change Password',

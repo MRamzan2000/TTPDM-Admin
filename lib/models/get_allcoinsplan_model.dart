@@ -1,6 +1,4 @@
-// To parse this JSON data, do
-//
-//     final getAllCoinsPlan = getAllCoinsPlanFromJson(jsonString);
+
 
 import 'dart:convert';
 

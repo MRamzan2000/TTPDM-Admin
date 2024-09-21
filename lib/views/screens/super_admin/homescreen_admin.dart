@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -10,9 +8,10 @@ import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/get_statistics_controller.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/user_profile_controller.dart';
+import 'package:ttpdm_admin/controller/utils/alert_box.dart';
 import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
 import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
-
+import 'package:ttpdm_admin/views/screens/notification_section/super_admin_notification_screen.dart';
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
 
@@ -35,23 +34,28 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     'Compared to(165 last Month)',
     'Compared to(10500 last Month)'
   ].obs;
+  final RxList<Color> allColors = [
+    const Color(0xff0062FF),
+    const Color(0xffFF974A),
+    const Color(0xff3DD598)
+  ].obs;
   late UserProfileController userProfileController;
   late GetStatisticsController getStatisticsController;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getStatisticsController =
         Get.put(GetStatisticsController(context: context));
     userProfileController = Get.put(UserProfileController(context: context));
     String id = MySharedPreferences.getString(userId);
-
-    userProfileController.fetchUserProfile(
-        loading: userProfileController.userProfile.value == null, id: id);
-    getStatisticsController.fetchStatistics(
-        loading: getStatisticsController.statics.isEmpty);
-    log("user profile :${userProfileController.userProfile.value}");
-    log("user id :$id");
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await userProfileController.fetchUserProfile(
+          loading: userProfileController.userProfile.value == null, id: id);
+      await getStatisticsController.fetchMonthlyStates(
+          loading: getStatisticsController.monthlyStatics.value == null);
+      await getStatisticsController.fetchStatistics(
+          loading: getStatisticsController.statics.isEmpty);
+    });
   }
 
   @override
@@ -62,15 +66,15 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'TTPDM',
+          'ADVYRO',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
               color: AppColors.mainColor),
         ),
       ),
-      body: Obx(() =>
-         SizedBox(
+      body: Obx(
+        () => SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Padding(
@@ -81,96 +85,119 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 children: [
                   userProfileController.isLoading.value
                       ? Shimmer.fromColors(
-                    highlightColor: AppColors.highlightColor,
-                    baseColor: AppColors.baseColor,
-                    child: SizedBox(
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: CircleAvatar(
-                          radius: 2.8.h,
-                        ),
-                        title: const Text(
-                          '',
-                        ),
-                        subtitle: const Text(
-                          '',
-                        ),
-                        trailing: SizedBox(
-                          height: 4.8.h,
-                          width: 4.8.h,
-                        ),
-                      ),
-                    ),
-                  )
+                          highlightColor: AppColors.highlightColor,
+                          baseColor: AppColors.baseColor,
+                          child: SizedBox(
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                radius: 2.8.h,
+                              ),
+                              title: const Text(
+                                '',
+                              ),
+                              subtitle: const Text(
+                                '',
+                              ),
+                              trailing: SizedBox(
+                                height: 4.8.h,
+                                width: 4.8.h,
+                              ),
+                            ),
+                          ),
+                        )
                       : userProfileController.userProfile.value == null
-                      ? ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      radius: 2.8.h,
-                      backgroundImage:
-                      const AssetImage('assets/pngs/profile.png'),
-                    ),
-                    title: Text(
-                      'Hello Mid Admin',
-                      style: TextStyle(
-                          fontFamily: 'bold',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18.px,
-                          color: const Color(0xff2F3542)),
-                    ),
-                    subtitle: Text('Welcome Back',
-                        style: TextStyle(
-                            fontFamily: 'light',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12.px,
-                            color: const Color(0xff2F3542))),
-                    trailing: GestureDetector(
-                      onTap: () {},
-                      child: SizedBox(
-                          height: 4.8.h,
-                          width: 4.8.h,
-                          child: svgImage(
-                              'assets/svgs/midadminnotification.svg')),
-                    ),
-                  )
-                      : ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      radius: 2.8.h,
-                      backgroundImage:
-                      const AssetImage('assets/pngs/profile.png'),
-                    ),
-                    title: Text(
-                      userProfileController.userProfile.value!.fullname,
-                      style: TextStyle(
-                          fontFamily: 'bold',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 18.px,
-                          color: const Color(0xff2F3542)),
-                    ),
-                    subtitle: Text('Welcome Back',
-                        style: TextStyle(
-                            fontFamily: 'light',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12.px,
-                            color: const Color(0xff2F3542))),
-                    trailing: GestureDetector(
-                      onTap: () {},
-                      child: SizedBox(
-                          height: 4.8.h,
-                          width: 4.8.h,
-                          child: svgImage(
-                              'assets/svgs/midadminnotification.svg')),
-                    ),
-                  ),
+                          ? ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                radius: 2.8.h,
+                                backgroundImage:
+                                    const AssetImage('assets/pngs/profile.png'),
+                              ),
+                              title: Text(
+                                'Hello Mid Admin',
+                                style: TextStyle(
+                                    fontFamily: 'bold',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 18.px,
+                                    color: const Color(0xff2F3542)),
+                              ),
+                              subtitle: Text('Welcome Back',
+                                  style: TextStyle(
+                                      fontFamily: 'light',
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12.px,
+                                      color: const Color(0xff2F3542))),
+                              trailing: GestureDetector(
+                                onTap: () {},
+                                child: SizedBox(
+                                    height: 4.8.h,
+                                    width: 4.8.h,
+                                    child: svgImage(
+                                        'assets/svgs/midadminnotification.svg')),
+                              ),
+                            )
+                          : ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: GestureDetector(
+                                onTap: () {
+                                  openChooseEditProfile(
+                                    context,
+                                    name: userProfileController
+                                        .userProfile.value!.fullname,
+                                    profileImage:
+                                        "${userProfileController.userProfile.value!.profilePic}",
+                                  );
+                                },
+                                child: userProfileController
+                                            .userProfile.value!.profilePic !=
+                                        null
+                                    ? CircleAvatar(
+                                        radius: 2.8.h,
+                                        backgroundImage: NetworkImage(
+                                            userProfileController
+                                                .userProfile.value!.profilePic))
+                                    : CircleAvatar(
+                                        radius: 2.8.h,
+                                        backgroundImage: const AssetImage(
+                                            'assets/pngs/profile.png'),
+                                      ),
+                              ),
+                              title: Text(
+                                userProfileController
+                                    .userProfile.value!.fullname,
+                                style: TextStyle(
+                                    fontFamily: 'bold',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 18.px,
+                                    color: const Color(0xff2F3542)),
+                              ),
+                              subtitle: Text('Welcome Back',
+                                  style: TextStyle(
+                                      fontFamily: 'light',
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12.px,
+                                      color: const Color(0xff2F3542))),
+                              trailing: GestureDetector(
+                                onTap: () {
+                                  Get.to(()=>const SuperAdminNotiFicationScreen());
+                                },
+                                child: SizedBox(
+                                    height: 4.8.h,
+                                    width: 4.8.h,
+                                    child: svgImage(
+                                        'assets/svgs/midadminnotification.svg')),
+                              ),
+                            ),
                   getVerticalSpace(2.8.h),
-                  getStatisticsController.isLoading.value
+                  getStatisticsController.statisticsLoading.value
                       ? GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: profilesList.length,
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: .6.h,
                             mainAxisSpacing: .6.h,
@@ -209,7 +236,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           itemCount: profilesList.length,
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: .6.h,
                             mainAxisSpacing: .6.h,
@@ -239,50 +267,136 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                                 fontFamily: 'bold',
                                                 fontWeight: FontWeight.w600)),
                                         TextSpan(
-                                            text: " ${valuesList[index]}",
+                                            text:
+                                                " ${index == 0 ? getStatisticsController.totalUserPercentage : index == 1 ? getStatisticsController.cancellationPercentage : index == 2 ? getStatisticsController.cancellationPercentage : getStatisticsController.returnRatePercentage.value}",
                                             style: TextStyle(
-                                                color: index == 2
-                                                    ? const Color(0xffFC5A5A)
-                                                    : const Color(0xff3DD598),
+                                                color: index == 0 &&
+                                                    getStatisticsController
+                                                        .totalUser.value
+                                                    ? const Color(0xff3DD598):index == 1 &&
+                                                    getStatisticsController
+                                                        .campaign.value
+                                                    ?const Color(0xff3DD598):
+                                                index == 2 &&
+                                                    getStatisticsController
+                                                        .cancellation.value
+                                                    ?const Color(0xff3DD598):
+                                                const Color(0xffFC5A5A),
                                                 fontSize: 14.px,
                                                 fontFamily: 'bold',
                                                 fontWeight: FontWeight.w600)),
                                       ])),
                                       getHorizentalSpace(.2.h),
-                                      index == 2
+                                      index == 0 &&
+                                              getStatisticsController
+                                                  .totalUser.value
                                           ? SvgPicture.asset(
-                                              'assets/svgs/arrowdown.svg')
-                                          : SvgPicture.asset(
                                               'assets/svgs/arrowup.svg')
+                                          : index == 1 &&
+                                                  getStatisticsController
+                                                      .campaign.value
+                                              ? SvgPicture.asset(
+                                                  'assets/svgs/arrowup.svg')
+                                              : index == 2 &&
+                                                      getStatisticsController
+                                                          .cancellation.value
+                                                  ? SvgPicture.asset(
+                                                      'assets/svgs/arrowup.svg')
+                                                  : SvgPicture.asset(
+                                                      'assets/svgs/arrowdown.svg')
                                     ],
                                   ),
                                   getVerticalSpace(1.1.h),
-                                  Text(
-                                    numbers[index],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'bold',
-                                      fontSize: 26.px,
-                                      color: const Color(0xff171725),
-                                    ),
-                                  ),
+                                  index == 0
+                                      ? Text(
+                                          "${getStatisticsController.monthlyStatics.value!.totalUsers.thisMonth}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'bold',
+                                            fontSize: 26.px,
+                                            color: const Color(0xff171725),
+                                          ),
+                                        )
+                                      : index == 1
+                                          ? Text(
+                                              "${getStatisticsController.monthlyStatics.value!.campaigns.created.thisMonth}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'bold',
+                                                fontSize: 26.px,
+                                                color: const Color(0xff171725),
+                                              ),
+                                            )
+                                          : index == 2
+                                              ? Text(
+                                                  "${getStatisticsController.monthlyStatics.value?.cancellations.thisMonth}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontFamily: 'bold',
+                                                    fontSize: 26.px,
+                                                    color:
+                                                        const Color(0xff171725),
+                                                  ),
+                                                )
+                                              : Text(
+                                                  "${getStatisticsController.monthlyStatics.value?.returnRate.thisMonth}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontFamily: 'bold',
+                                                    fontSize: 26.px,
+                                                    color:
+                                                        const Color(0xff171725),
+                                                  ),
+                                                ),
                                   getVerticalSpace(1.h),
-                                  Text(
-                                    descriptionList[index],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'regular',
-                                      fontSize: 13.px,
-                                      color: const Color(0xff92929D),
-                                    ),
-                                  )
+                                  index == 0
+                                      ? Text(
+                                          "Compared \nto( ${getStatisticsController.monthlyStatics.value?.totalUsers.lastMonth} last Month)",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: 'regular',
+                                            fontSize: 13.px,
+                                            color: const Color(0xff92929D),
+                                          ),
+                                        )
+                                      : index == 1
+                                          ? Text(
+                                              "Compared \nto( ${getStatisticsController.monthlyStatics.value?.campaigns.created.lastMonth} last Month)",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: 'regular',
+                                                fontSize: 13.px,
+                                                color: const Color(0xff92929D),
+                                              ),
+                                            )
+                                          : index == 2
+                                              ? Text(
+                                                  "Compared \nto( ${getStatisticsController.monthlyStatics.value?.cancellations.lastMonth} last Month)",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontFamily: 'regular',
+                                                    fontSize: 13.px,
+                                                    color:
+                                                        const Color(0xff92929D),
+                                                  ),
+                                                )
+                                              : Text(
+                                                  "Compared \nto( ${getStatisticsController.monthlyStatics.value?.returnRate.lastMonth} last Month)",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontFamily: 'regular',
+                                                    fontSize: 13.px,
+                                                    color:
+                                                        const Color(0xff92929D),
+                                                  ),
+                                                )
                                 ],
                               ),
                             );
                           },
                         ),
                   getVerticalSpace(1.4.h),
-                  getStatisticsController.isLoading.value
+                  getStatisticsController.statsLoading.value
                       ? Shimmer.fromColors(
                           baseColor: AppColors.baseColor,
                           highlightColor: AppColors.highlightColor,
@@ -295,191 +409,320 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                 color: AppColors.whiteColor),
                           ),
                         )
-                      : Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 2.7.h, vertical: 1.9.h),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(2.h),
-                              color: AppColors.whiteColor),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      : getStatisticsController.statics.isEmpty
+                          ? Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 2.7.h, vertical: 1.9.h),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2.h),
+                                  color: AppColors.whiteColor),
+                              child: Column(
                                 children: [
-                                  SvgPicture.asset('assets/svgs/left.svg'),
-                                  Text(
-                                    'Subscription ',
-                                    style: TextStyle(
-                                        fontFamily: 'bold',
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 18.px,
-                                        color: const Color(0xff171725)),
-                                  ),
-                                  SvgPicture.asset('assets/svgs/right.svg'),
-                                ],
-                              ),
-                              getVerticalSpace(3.h),
-                              Stack(
-                                children: [
-                                  SizedBox(
-                                    height: 16.7.h,
-                                    width: 16.7.h,
-                                    child: const CircularProgressIndicator(
-                                      backgroundColor: Colors.yellow,
-                                      value: 1.0, // full circle
-                                      strokeWidth: 5,
-                                      valueColor: AlwaysStoppedAnimation(
-                                          Color(0xffFFC542)),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 16.7.h,
-                                    width: 16.7.h,
-                                    child: const CircularProgressIndicator(
-                                      value: 0.5, // 70% of the circle
-                                      strokeWidth: 5,
-                                      valueColor: AlwaysStoppedAnimation(
-                                          Color(0xff0062FF)),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 16.7.h,
-                                    width: 16.7.h,
-                                    child: const CircularProgressIndicator(
-                                      value: 0.1, // 40% of the circle
-                                      strokeWidth: 5,
-                                      valueColor: AlwaysStoppedAnimation(
-                                          Color(0xff3DD598)),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 6.h,
-                                    left: 2.h,
-                                    right: 2.h,
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          '22.870',
-                                          style: TextStyle(
-                                            fontSize: 20.px,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SvgPicture.asset('assets/svgs/left.svg'),
+                                      Text(
+                                        'Subscription ',
+                                        style: TextStyle(
                                             fontFamily: 'bold',
                                             fontWeight: FontWeight.w600,
-                                            color: const Color(0xff171725),
-                                          ),
+                                            fontSize: 18.px,
+                                            color: const Color(0xff171725)),
+                                      ),
+                                      SvgPicture.asset('assets/svgs/right.svg'),
+                                    ],
+                                  ),
+                                  getVerticalSpace(3.h),
+                                  Stack(
+                                    children: [
+                                      SizedBox(
+                                        height: 16.7.h,
+                                        width: 16.7.h,
+                                        child: const CircularProgressIndicator(
+                                          backgroundColor: Colors.yellow,
+                                          value: 1.0, // full circle
+                                          strokeWidth: 5,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Color(0xffFFC542)),
                                         ),
-                                        Text(
-                                          'Visitors this year',
-                                          style: TextStyle(
-                                            fontSize: 10.px,
-                                            fontFamily: 'regular',
+                                      ),
+                                      SizedBox(
+                                        height: 16.7.h,
+                                        width: 16.7.h,
+                                        child: const CircularProgressIndicator(
+                                          value: 0.5, // 70% of the circle
+                                          strokeWidth: 5,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Color(0xff0062FF)),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 16.7.h,
+                                        width: 16.7.h,
+                                        child: const CircularProgressIndicator(
+                                          value: 0.1, // 40% of the circle
+                                          strokeWidth: 5,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Color(0xff3DD598)),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 6.h,
+                                        left: 2.h,
+                                        right: 2.h,
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              '22.870',
+                                              style: TextStyle(
+                                                fontSize: 20.px,
+                                                fontFamily: 'bold',
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xff171725),
+                                              ),
+                                            ),
+                                            Text(
+                                              'Visitors this year',
+                                              style: TextStyle(
+                                                fontSize: 10.px,
+                                                fontFamily: 'regular',
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color(0xff696974),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  getVerticalSpace(2.8.h),
+                                  Row(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: 11,
+                                            width: 13,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.h),
+                                                color: const Color(0xff0062FF)),
+                                          ),
+                                          getHorizentalSpace(1.h),
+                                          Text(
+                                            'Basic',
+                                            style: TextStyle(
+                                                color: const Color(0xff44444F),
+                                                fontSize: 15.px,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: 'regular'),
+                                          ),
+                                          getHorizentalSpace(2.h),
+                                          Text(
+                                            '2.1k',
+                                            style: TextStyle(
+                                                color: const Color(0xff44444F),
+                                                fontSize: 15.px,
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'bold'),
+                                          ),
+                                        ],
+                                      ),
+                                      getHorizentalSpace(3.5.h),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: 11,
+                                            width: 13,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.h),
+                                                color: const Color(0xffFF974A)),
+                                          ),
+                                          getHorizentalSpace(1.h),
+                                          Text(
+                                            'Standard',
+                                            style: TextStyle(
+                                                color: const Color(0xff44444F),
+                                                fontSize: 15.px,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: 'regular'),
+                                          ),
+                                          getHorizentalSpace(2.h),
+                                          Text(
+                                            '1k',
+                                            style: TextStyle(
+                                                color: const Color(0xff44444F),
+                                                fontSize: 15.px,
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'bold'),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  getVerticalSpace(1.1.h),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        height: 11,
+                                        width: 13,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.h),
+                                            color: const Color(0xff3DD598)),
+                                      ),
+                                      getHorizentalSpace(1.h),
+                                      Text(
+                                        'Pro',
+                                        style: TextStyle(
+                                            color: const Color(0xff44444F),
+                                            fontSize: 15.px,
                                             fontWeight: FontWeight.w400,
-                                            color: const Color(0xff696974),
-                                          ),
+                                            fontFamily: 'regular'),
+                                      ),
+                                      getHorizentalSpace(2.h),
+                                      Text(
+                                        '1.9k',
+                                        style: TextStyle(
+                                            color: const Color(0xff44444F),
+                                            fontSize: 15.px,
+                                            fontWeight: FontWeight.w700,
+                                            fontFamily: 'bold'),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 2.7.h, vertical: 1.9.h),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(2.h),
+                                  color: AppColors.whiteColor),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SvgPicture.asset('assets/svgs/left.svg'),
+                                      Text(
+                                        'Subscription ',
+                                        style: TextStyle(
+                                            fontFamily: 'bold',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18.px,
+                                            color: const Color(0xff171725)),
+                                      ),
+                                      SvgPicture.asset('assets/svgs/right.svg'),
+                                    ],
+                                  ),
+                                  getVerticalSpace(3.h),
+                                  Stack(
+                                    children: [
+                                      SizedBox(
+                                        height: 16.7.h,
+                                        width: 16.7.h,
+                                        child: const CircularProgressIndicator(
+                                          backgroundColor: Colors.yellow,
+                                          value: 1.0, // full circle
+                                          strokeWidth: 5,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Color(0xffFFC542)),
                                         ),
-                                      ],
+                                      ),
+                                      SizedBox(
+                                        height: 16.7.h,
+                                        width: 16.7.h,
+                                        child: const CircularProgressIndicator(
+                                          value: 0.5, // 70% of the circle
+                                          strokeWidth: 5,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Color(0xff0062FF)),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 16.7.h,
+                                        width: 16.7.h,
+                                        child: const CircularProgressIndicator(
+                                          value: 0.1, // 40% of the circle
+                                          strokeWidth: 5,
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Color(0xff3DD598)),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 6.h,
+                                        left: 2.h,
+                                        right: 2.h,
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              '22.870',
+                                              style: TextStyle(
+                                                fontSize: 20.px,
+                                                fontFamily: 'bold',
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xff171725),
+                                              ),
+                                            ),
+                                            Text(
+                                              'Visitors this year',
+                                              style: TextStyle(
+                                                fontSize: 10.px,
+                                                fontFamily: 'regular',
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color(0xff696974),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  getVerticalSpace(2.h),
+                                  SizedBox(
+                                    height: 8.h, // Adjust height as needed
+                                    child: GridView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.zero,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount:
+                                            2, // Number of columns in the grid
+                                        mainAxisSpacing: .6
+                                            .h, // Vertical spacing between grid items
+                                        crossAxisSpacing: .5
+                                            .w, // Horizontal spacing between grid items
+                                        childAspectRatio: 1 /
+                                            0.13, // Aspect ratio of each grid item
+                                      ),
+                                      itemCount: getStatisticsController.statics
+                                          .length, // Number of items in the grid
+                                      itemBuilder: (context, index) {
+                                        final plan = getStatisticsController
+                                            .statics[index];
+                                        return _buildStatisticItem(
+                                          color: allColors[
+                                              index], // Replace with actual color
+                                          label: plan!.plan.isEmpty
+                                              ? "No Plan"
+                                              : plan
+                                                  .plan, // Replace with actual label
+                                          count: plan.count
+                                              .toString(), // Replace with actual count
+                                        );
+                                      },
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
-                              getVerticalSpace(2.8.h),
-                              Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        height: 11,
-                                        width: 13,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.h),
-                                            color: const Color(0xff0062FF)),
-                                      ),
-                                      getHorizentalSpace(1.h),
-                                      Text(
-                                        'Basic',
-                                        style: TextStyle(
-                                            color: const Color(0xff44444F),
-                                            fontSize: 15.px,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: 'regular'),
-                                      ),
-                                      getHorizentalSpace(2.h),
-                                      Text(
-                                        '2.1k',
-                                        style: TextStyle(
-                                            color: const Color(0xff44444F),
-                                            fontSize: 15.px,
-                                            fontWeight: FontWeight.w700,
-                                            fontFamily: 'bold'),
-                                      ),
-                                    ],
-                                  ),
-                                  getHorizentalSpace(3.5.h),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        height: 11,
-                                        width: 13,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.h),
-                                            color: const Color(0xffFF974A)),
-                                      ),
-                                      getHorizentalSpace(1.h),
-                                      Text(
-                                        'Standard',
-                                        style: TextStyle(
-                                            color: const Color(0xff44444F),
-                                            fontSize: 15.px,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: 'regular'),
-                                      ),
-                                      getHorizentalSpace(2.h),
-                                      Text(
-                                        '1k',
-                                        style: TextStyle(
-                                            color: const Color(0xff44444F),
-                                            fontSize: 15.px,
-                                            fontWeight: FontWeight.w700,
-                                            fontFamily: 'bold'),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              getVerticalSpace(1.1.h),
-                              Row(
-                                children: [
-                                  Container(
-                                    height: 11,
-                                    width: 13,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10.h),
-                                        color: const Color(0xff3DD598)),
-                                  ),
-                                  getHorizentalSpace(1.h),
-                                  Text(
-                                    'Pro',
-                                    style: TextStyle(
-                                        color: const Color(0xff44444F),
-                                        fontSize: 15.px,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'regular'),
-                                  ),
-                                  getHorizentalSpace(2.h),
-                                  Text(
-                                    '1.9k',
-                                    style: TextStyle(
-                                        color: const Color(0xff44444F),
-                                        fontSize: 15.px,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'bold'),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
+                            ),
                   getVerticalSpace(10.h),
                 ],
               ),
@@ -487,6 +730,45 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatisticItem({
+    required Color color,
+    required String label,
+    required String count,
+  }) {
+    return Row(
+      children: [
+        Container(
+          height: 8.h,
+          width: 5.w,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.h),
+            color: color,
+          ),
+        ),
+        SizedBox(width: 5.w), // Horizontal space
+        Text(
+          label,
+          style: TextStyle(
+            color: const Color(0xff44444F),
+            fontSize: 15.sp, // Adjust according to your screen size
+            fontWeight: FontWeight.w400,
+            fontFamily: 'regular',
+          ),
+        ),
+        getHorizentalSpace(2.h),
+        Text(
+          count,
+          style: TextStyle(
+            color: const Color(0xff44444F),
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'bold',
+          ),
+        ),
+      ],
     );
   }
 }

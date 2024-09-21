@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -7,17 +10,48 @@ import 'package:ttpdm_admin/controller/custom_widgets/custom_text_styles.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/widgets.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/login_user_controller.dart';
 import 'package:ttpdm_admin/controller/utils/apis_constant.dart';
+import 'package:ttpdm_admin/controller/utils/push_notification.dart';
 
 import 'register_screen.dart';
 import 'reset_otp.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController=TextEditingController();
+
   final TextEditingController passwordController=TextEditingController();
+  final NotificationServices notificationServices = NotificationServices();
+  late LoginUserController loginUserController ;
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loginUserController= Get.put(LoginUserController(context: context));
+  }
+void getToken()async{
+  FirebaseMessaging.instance.getToken().then((String? token) {
+    if (token != null) {
+      loginUserController.userLogin(
+          email: emailController.text,
+          password: passwordController.text,
+          isLogin: true, fcmToken: token
+      );
+      log("Push Messaging token: $token");
+    }
+  }).catchError((error) {
+    log("Error getting push messaging token: $error");
+  });
+}
+
   @override
   Widget build(BuildContext context) {
-    final LoginUserController loginUserController =Get.put(LoginUserController(context: context));
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -104,7 +138,8 @@ class LoginScreen extends StatelessWidget {
                             'Login ',
                             style: CustomTextStyles.buttonTextStyle.copyWith(color: AppColors.whiteColor),
                           ),
-                          onTap: () {
+                          onTap: () async {
+
                             if (emailController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Please enter the email')),
@@ -114,11 +149,7 @@ class LoginScreen extends StatelessWidget {
                                 const SnackBar(content: Text('Please enter the password')),
                               );
                             }  else {
-                              loginUserController.userLogin(
-                                email: emailController.text,
-                                password: passwordController.text,
-                                isLogin: true
-                              );
+                              getToken();
                             }
                           },
                           bgColor: AppColors.mainColor,
