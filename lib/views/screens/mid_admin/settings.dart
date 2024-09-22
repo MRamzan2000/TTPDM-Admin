@@ -20,7 +20,7 @@ class SettingScreen extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'ADVYRO',
+          'Settings',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,

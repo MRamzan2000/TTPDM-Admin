@@ -37,13 +37,14 @@ class DesignRequestController extends GetxController {
   RxBool uploading = false.obs;
   Future<void> uploadProfileImage({
     required String token,
+    required String businessId,
     required File designs, // Expecting a File object for image
     required BuildContext context, // Expecting a File object for image
   }) async {
     try {
       uploading.value = true;
       await GetAllDesignApi(context: context)
-          .uploadDesign(token: token,  design: designs, context: context)
+          .uploadDesign(token: token,  design: designs, context: context, businessId:businessId)
           .then(
             (value) {
           uploading.value = false;

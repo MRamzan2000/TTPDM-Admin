@@ -1,6 +1,8 @@
 
 import 'dart:convert';
 
+import 'package:ttpdm_admin/controller/utils/constants.dart';
+
 List<GetAllDesignRequestModel> getAllDesignRequestModelFromJson(String str) => List<GetAllDesignRequestModel>.from(json.decode(str).map((x) => GetAllDesignRequestModel.fromJson(x)));
 
 String getAllDesignRequestModelToJson(List<GetAllDesignRequestModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -156,7 +158,7 @@ class Business {
     targetMapArea: json["targetMapArea"],
     description: json["description"],
     gallery: List<String>.from(json["gallery"].map((x) => x)),
-    logo: json["logo"],
+    logo: json["logo"]??placeHolderImage,
     owner: json["owner"],
     status: json["status"],
     websiteUrl: json["websiteUrl"],

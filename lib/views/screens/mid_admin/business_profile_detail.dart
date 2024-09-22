@@ -1,9 +1,7 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
@@ -144,7 +142,7 @@ class _BusinessProfileState extends State<BusinessProfile> {
                     children: [
                       CircleAvatar(
                         radius: 4.2.h,
-                        backgroundImage: NetworkImage(widget.logo),
+                        backgroundImage: NetworkImage(widget.logo, scale: 1.0),
                       ),
                       getVerticalSpace(.8.h),
                       Text(
@@ -274,41 +272,45 @@ class _BusinessProfileState extends State<BusinessProfile> {
                   ],
                 ),
                 getVerticalSpace(1.2.h),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2.h),
-                      color: AppColors.baseColor),
-                  height: 30.3.h,
-                  child: GridView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: widget.imagesList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 2.h,
-                      crossAxisSpacing: 3.w,
-                    ),
-                    itemBuilder: (context, index) {
-                      return Stack(
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            height: 11.3.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(1.h),
-                              color: AppColors.whiteColor,
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    widget.imagesList[index],
-                                  ),
-                                  fit: BoxFit.cover),
-                            ),
+                widget.imagesList.isEmpty
+                    ? const SizedBox.shrink()
+                    : Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2.h),
+                            color: AppColors.baseColor),
+                        height: 30.3.h,
+                        child: GridView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: widget.imagesList.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 2.h,
+                            crossAxisSpacing: 3.w,
                           ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                          itemBuilder: (context, index) {
+                            return Stack(
+                              children: [
+                                Container(
+                                  alignment: Alignment.center,
+                                  height: 11.3.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(1.h),
+                                    color: AppColors.whiteColor,
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                          widget.imagesList[index],
+                                        ),
+                                        fit: BoxFit.cover,
+                                        scale: 1.0),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
                 getVerticalSpace(2.4.h),
                 widget.title == "pending"
                     ? const SizedBox.shrink()
@@ -381,9 +383,9 @@ class _BusinessProfileState extends State<BusinessProfile> {
                                 : Container(
                                     padding: EdgeInsets.all(1.h),
                                     decoration: BoxDecoration(
-                                        color: AppColors.baseColor,
-                                        borderRadius:
-                                            BorderRadius.circular(2.h)),
+                                      color: AppColors.baseColor,
+                                      borderRadius: BorderRadius.circular(2.h),
+                                    ),
                                     height: 30.h,
                                     child: GridView.builder(
                                       gridDelegate:
@@ -398,8 +400,20 @@ class _BusinessProfileState extends State<BusinessProfile> {
                                             1, // Aspect ratio for each item
                                       ),
                                       itemCount: posterController
-                                          .allPosters.value!.designs.length,
+                                          .allPosters.value!.designs
+                                          .where((design) =>
+                                              design.businessId ==
+                                              widget.businessId)
+                                          .length,
                                       itemBuilder: (context, index) {
+                                        // Create the filtered designs list
+                                        final filteredDesigns = posterController
+                                            .allPosters.value!.designs
+                                            .where((design) =>
+                                                design.businessId ==
+                                                widget.businessId)
+                                            .toList();
+
                                         return Stack(
                                           children: [
                                             Column(
@@ -409,8 +423,9 @@ class _BusinessProfileState extends State<BusinessProfile> {
                                                     alignment: Alignment.center,
                                                     padding: const EdgeInsets
                                                         .symmetric(
-                                                        horizontal: 8.0,
-                                                        vertical: 8.0),
+                                                      horizontal: 8.0,
+                                                      vertical: 8.0,
+                                                    ),
                                                     decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -427,40 +442,36 @@ class _BusinessProfileState extends State<BusinessProfile> {
                                                       ],
                                                       image: DecorationImage(
                                                         image: NetworkImage(
-                                                            posterController
-                                                                .allPosters
-                                                                .value!
-                                                                .designs[index]
-                                                                .fileUrl),
+                                                          filteredDesigns[index]
+                                                              .fileUrl,
+                                                        ),
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                                posterController
-                                                            .allPosters
-                                                            .value!
-                                                            .designs[index]
+                                                filteredDesigns[index]
                                                             .likeCount >
                                                         0
                                                     ? SizedBox(
                                                         height: 3.h,
                                                         width: 7.h,
                                                         child: const Image(
-                                                            image: AssetImage(
-                                                                'assets/pngs/like.png')))
-                                                    : posterController
-                                                                .allPosters
-                                                                .value!
-                                                                .designs[index]
+                                                          image: AssetImage(
+                                                              'assets/pngs/like.png'),
+                                                        ),
+                                                      )
+                                                    : filteredDesigns[index]
                                                                 .dislikeCount >
                                                             0
                                                         ? SizedBox(
                                                             height: 3.h,
                                                             width: 7.h,
                                                             child: const Image(
-                                                                image: AssetImage(
-                                                                    'assets/pngs/dislike.png')))
+                                                              image: AssetImage(
+                                                                  'assets/pngs/dislike.png'),
+                                                            ),
+                                                          )
                                                         : const SizedBox
                                                             .shrink(),
                                               ],
@@ -472,65 +483,45 @@ class _BusinessProfileState extends State<BusinessProfile> {
                                   ),
                       ),
                 getVerticalSpace(2.h),
-
-                  widget.title == "pending"
-                      ?const SizedBox.shrink():
-                       GestureDetector(
-                          onTap: () {
-                            imagePickerController
-                                .pickImage(ImageSource.gallery);
-                          },
-                          child: Obx(() =>
-                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                imagePickerController.image.value == null
-                                    ? Container(
-                                        alignment: Alignment.center,
-                                        height: 15.h,
-                                        width: 15.h,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.whiteColor,
-                                          borderRadius:
-                                              BorderRadius.circular(2.h),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              size: 3.h,
-                                              Icons.add,
-                                              color: AppColors.mainColor,
-                                            ),
-                                            Text(
-                                              'Upload',
-                                              style: CustomTextStyles
-                                                  .buttonTextStyle
-                                                  .copyWith(
-                                                      color: AppColors.mainColor),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    : Container(
-                                        alignment: Alignment.center,
-                                        height: 15.h,
-                                        width: 15.h,
-                                        decoration: BoxDecoration(
-                                            color: AppColors.whiteColor,
-                                            borderRadius:
-                                                BorderRadius.circular(2.h),
-                                            image: DecorationImage(
-                                                image: FileImage(File(
-                                                    imagePickerController
-                                                        .image.value!.path)),
-                                                fit: BoxFit.cover)),
-                                      ),
-                              ],
-                            ),
-                          ),
+                widget.title == "pending"
+                    ? const SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () {
+                          openCampaignSubmit(context,
+                              token: token.value, ownerId:widget.ownerId,
+                              currentUserName: widget.currentUserName, id: id.value, businessId: widget.businessId);
+                          // imagePickerController.pickImage(ImageSource.gallery);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              height: 15.h,
+                              width: 15.h,
+                              decoration: BoxDecoration(
+                                color: AppColors.whiteColor,
+                                borderRadius: BorderRadius.circular(2.h),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    size: 3.h,
+                                    Icons.add,
+                                    color: AppColors.mainColor,
+                                  ),
+                                  Text(
+                                    'Upload',
+                                    style: CustomTextStyles.buttonTextStyle
+                                        .copyWith(color: AppColors.mainColor),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
                         ),
+                      ),
                 widget.title == "pending"
                     ? const SizedBox.shrink()
                     : getVerticalSpace(2.h),
@@ -598,45 +589,6 @@ class _BusinessProfileState extends State<BusinessProfile> {
                         ],
                       )
                     : const SizedBox.shrink(),
-                getVerticalSpace(3.h),
-             widget.title=="pending"?const SizedBox.shrink():   Obx(
-                  () => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      customElevatedButton(
-                          onTap: () {
-                            if (imagePickerController.image.value == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Please select image")));
-                            } else {
-                              designRequestController.uploadProfileImage(
-                                  token: token.value,
-                                  designs: File(
-                                      imagePickerController.image.value!.path),
-                                  context: context).then((value) {
-                                getFcmTokenSendNotificationController.fetchFcmToken(
-                                    loading: getFcmTokenSendNotificationController.fcmToken.value==null,
-                                    userId: widget.ownerId,
-                                    token: token.value,
-                                    title:"Uploaded design" ,
-                                    message: "${widget.currentUserName}Uploaded design",
-                                    info1: id.value,
-                                    info2: "");
-                                  },);
-                            }
-                          },
-                          bgColor: AppColors.mainColor,
-                          title: designRequestController.uploading.value
-                              ? spinkit
-                              : Text(
-                                  "Upload",
-                                  style: CustomTextStyles.buttonTextStyle
-                                      .copyWith(color: AppColors.whiteColor),
-                                ))
-                    ],
-                  ),
-                ),
                 getVerticalSpace(2.h)
               ],
             ),

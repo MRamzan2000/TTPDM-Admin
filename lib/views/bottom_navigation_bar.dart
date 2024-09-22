@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:ttpdm_admin/controller/getx_controllers/user_profile_controller.dart';
 import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
 import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
@@ -42,7 +41,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         () =>userProfileController.isLoading.value?
            const SizedBox.shrink():
         BottomAppBar(
-          padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 1.h),
+          padding: EdgeInsets.symmetric(horizontal: 0.h, vertical: 1.h),
           color: AppColors.whiteColor,
           shape: const CircularNotchedRectangle(),
           notchMargin: 5,

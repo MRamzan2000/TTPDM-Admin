@@ -37,10 +37,11 @@ class GetAllDesignApi{
   //Upload Design
   Future<void> uploadDesign({
     required String token,
+    required String businessId,
     required File design, // Expecting a File object for image
     required BuildContext context,
   }) async {
-    final url = Uri.parse('$baseUrl/$uploadEP');
+    final url = Uri.parse('$baseUrl/$uploadEP businessId=$businessId');
 
     // Prepare multipart request
     var request = http.MultipartRequest('POST', url)

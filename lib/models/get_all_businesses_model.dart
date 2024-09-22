@@ -1,6 +1,8 @@
 
 import 'dart:convert';
 
+import 'package:ttpdm_admin/controller/utils/constants.dart';
+
 GetAllBusinessModel getAllBusinessModelFromJson(String str) => GetAllBusinessModel.fromJson(json.decode(str));
 
 String getAllBusinessModelToJson(GetAllBusinessModel data) => json.encode(data.toJson());
@@ -139,7 +141,7 @@ class BusinessBusiness {
     targetMapArea: json["targetMapArea"],
     description: json["description"],
     gallery: List<String>.from(json["gallery"].map((x) => x)),
-    logo: json["logo"],
+    logo: json["logo"]??placeHolderImage,
     owner: Owner.fromJson(json["owner"]),
     status: json["status"],
     websiteUrl: json["websiteUrl"],

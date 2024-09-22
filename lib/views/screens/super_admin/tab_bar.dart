@@ -63,7 +63,7 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'ADVYRO',
+          'Subscription',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -73,267 +73,267 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        child: Obx(
-          () => Column(
+        child:
+        Column(
             children: [
-              Container(
-                color: const Color(0xffE0E0DF),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        isSelected.value = 'Coin bundles';
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 6.9.h, vertical: 1.2.h),
-                        color: isSelected.value == 'Coin bundles'
-                            ? AppColors.mainColor
-                            : Colors.transparent,
-                        child: Text(
-                          'Coin bundles',
-                          style: TextStyle(
-                              fontFamily: 'bold',
-                              fontSize: 12.px,
-                              color: isSelected.value == 'Coin bundles'
-                                  ? AppColors.whiteColor
-                                  : const Color(0xff7C7C7C),
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        isSelected.value = 'Subscription';
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 6.9.h, vertical: 1.2.h),
-                        color: isSelected.value == 'Subscription'
-                            ? AppColors.mainColor
-                            : Colors.transparent,
-                        child: Text(
-                          'Subscription',
-                          style: TextStyle(
-                              fontFamily: 'bold',
-                              fontSize: 12.px,
-                              color: isSelected.value == 'Subscription'
-                                  ? AppColors.whiteColor
-                                  : const Color(0xff7C7C7C),
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              // Container(
+              //   color: const Color(0xffE0E0DF),
+              //   child: Row(
+              //     children: [
+              //       GestureDetector(
+              //         onTap: () {
+              //           isSelected.value = 'Coin bundles';
+              //         },
+              //         child: Container(
+              //           width: MediaQuery.of(context).size.width / 2,
+              //           padding: EdgeInsets.symmetric(
+              //               horizontal: 6.9.h, vertical: 1.2.h),
+              //           color: isSelected.value == 'Coin bundles'
+              //               ? AppColors.mainColor
+              //               : Colors.transparent,
+              //           child: Text(
+              //             'Coin bundles',
+              //             style: TextStyle(
+              //                 fontFamily: 'bold',
+              //                 fontSize: 12.px,
+              //                 color: isSelected.value == 'Coin bundles'
+              //                     ? AppColors.whiteColor
+              //                     : const Color(0xff7C7C7C),
+              //                 fontWeight: FontWeight.w500),
+              //           ),
+              //         ),
+              //       ),
+              //       GestureDetector(
+              //         onTap: () {
+              //           isSelected.value = 'Subscription';
+              //         },
+              //         child: Container(
+              //           width: MediaQuery.of(context).size.width / 2,
+              //           padding: EdgeInsets.symmetric(
+              //               horizontal: 6.9.h, vertical: 1.2.h),
+              //           color: isSelected.value == 'Subscription'
+              //               ? AppColors.mainColor
+              //               : Colors.transparent,
+              //           child: Text(
+              //             'Subscription',
+              //             style: TextStyle(
+              //                 fontFamily: 'bold',
+              //                 fontSize: 12.px,
+              //                 color: isSelected.value == 'Subscription'
+              //                     ? AppColors.whiteColor
+              //                     : const Color(0xff7C7C7C),
+              //                 fontWeight: FontWeight.w500),
+              //           ),
+              //         ),
+              //       )
+              //     ],
+              //   ),
+              // ),
               getVerticalSpace(2.4.h),
-              isSelected.value == 'Coin bundles'
-                  ? Obx(
-                      () => coinsController.isLoading.value
-                          ? Expanded(
-                              child: GridView.builder(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 2.5.h),
-                                itemCount: 7,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        mainAxisSpacing: 2.1.h,
-                                        crossAxisSpacing: 1.6.h),
-                                itemBuilder: (context, index) {
-                                  return Shimmer.fromColors(
-                                    baseColor: AppColors.baseColor,
-                                    highlightColor: AppColors.highlightColor,
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: .5.h, vertical: .5.h),
-                                      height: 11.3.h,
-                                      width: 11.6.h,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(1.h),
-                                          color: AppColors.whiteColor,
-                                          boxShadow: const [
-                                            BoxShadow(
-                                                offset: Offset(0, 1),
-                                                spreadRadius: 0,
-                                                blurRadius: 8,
-                                                color: Color(0xffFFE4EA))
-                                          ]),
-                                    ),
-                                  );
-                                },
-                              ),
-                            )
-                          : coinsController.getAllCoinsPlane.isEmpty
-                              ? Expanded(
-                                  child: Center(
-                                    child: Text(
-                                      "No Users Found",
-                                      style: TextStyle(
-                                        fontSize: 18.px,
-                                        color: AppColors.mainColor,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'bold',
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Expanded(
-                                  child: GridView.builder(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 2.5.h),
-                                    itemCount:
-                                        coinsController.getAllCoinsPlane.length,
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 3,
-                                            mainAxisSpacing: 2.1.h,
-                                            crossAxisSpacing: 1.6.h),
-                                    itemBuilder: (context, index) {
-                                      return Stack(children: [
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: .3.h, vertical: .5.h),
-                                          height: 13.3.h,
-                                          width: 13.6.h,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(1.h),
-                                              color: AppColors.whiteColor,
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                    offset: Offset(0, 1),
-                                                    spreadRadius: 0,
-                                                    blurRadius: 8,
-                                                    color: Color(0xffFFE4EA))
-                                              ]),
-                                          child: index ==
-                                                  coinsController
-                                                          .getAllCoinsPlane
-                                                          .length -
-                                                      1
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    openCreateNewPlan(context,
-                                                        title:
-                                                            'Create New Plan',
-                                                        coinPlanId:
-                                                            coinsController
-                                                                .getAllCoinsPlane[
-                                                                    index]!
-                                                                .id,
-                                                        token: token.value);
-                                                  },
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Icon(
-                                                        size: 4.h,
-                                                        Icons.add,
-                                                        color:
-                                                            AppColors.mainColor,
-                                                      ),
-                                                      Text(
-                                                        'Create new',
-                                                        style: CustomTextStyles
-                                                            .buttonTextStyle
-                                                            .copyWith(
-                                                                color: AppColors
-                                                                    .mainColor,
-                                                                fontSize:
-                                                                    12.px),
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                              : Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    SizedBox(
-                                                        height: 3.2.h,
-                                                        child: const Image(
-                                                            image: AssetImage(
-                                                                'assets/pngs/coinicon.png'))),
-                                                    Text(
-                                                      '${coinsController.getAllCoinsPlane[index]!.amount}',
-                                                      style: TextStyle(
-                                                          fontSize: 14.px,
-                                                          fontFamily: 'bold',
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: const Color(
-                                                              0xff4D4F53)),
-                                                    ),
-                                                    getVerticalSpace(1.2.h),
-                                                    Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: .5.h,
-                                                              vertical: .5.h),
-                                                      decoration: BoxDecoration(
-                                                          color: AppColors
-                                                              .mainColor,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      5.h)),
-                                                      child: Text(
-                                                        '\$${coinsController.getAllCoinsPlane[index]!.priceInCents}',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            fontFamily: 'bold',
-                                                            fontSize: 12.px,
-                                                            color: AppColors
-                                                                .whiteColor),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                        ),
-                                        index ==
-                                                coinsController.getAllCoinsPlane
-                                                        .length -
-                                                    1
-                                            ? const SizedBox.shrink()
-                                            : Positioned(
-                                                top: 0.5.h,
-                                                right: 1.h,
-                                                child: GestureDetector(
-                                                  onTapDown:
-                                                      (TapDownDetails details) {
-                                                    _showPopupMenu(
-                                                        context,
-                                                        details.globalPosition,
-                                                        0);
-                                                  },
-                                                  child: SizedBox(
-                                                    height: 2.5.h,
-                                                    width: 2.5.h,
-                                                    child: Icon(
-                                                      Icons.more_vert,
-                                                      color: const Color(
-                                                          0xff282827),
-                                                      size: 3.5.h,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                      ]);
-                                    },
-                                  ),
-                                ),
-                    )
-                  : Obx(
+              // isSelected.value == 'Coin bundles'
+              //     ? Obx(
+              //         () => coinsController.isLoading.value
+              //             ? Expanded(
+              //                 child: GridView.builder(
+              //                   padding:
+              //                       EdgeInsets.symmetric(horizontal: 2.5.h),
+              //                   itemCount: 7,
+              //                   gridDelegate:
+              //                       SliverGridDelegateWithFixedCrossAxisCount(
+              //                           crossAxisCount: 3,
+              //                           mainAxisSpacing: 2.1.h,
+              //                           crossAxisSpacing: 1.6.h),
+              //                   itemBuilder: (context, index) {
+              //                     return Shimmer.fromColors(
+              //                       baseColor: AppColors.baseColor,
+              //                       highlightColor: AppColors.highlightColor,
+              //                       child: Container(
+              //                         alignment: Alignment.center,
+              //                         padding: EdgeInsets.symmetric(
+              //                             horizontal: .5.h, vertical: .5.h),
+              //                         height: 11.3.h,
+              //                         width: 11.6.h,
+              //                         decoration: BoxDecoration(
+              //                             borderRadius:
+              //                                 BorderRadius.circular(1.h),
+              //                             color: AppColors.whiteColor,
+              //                             boxShadow: const [
+              //                               BoxShadow(
+              //                                   offset: Offset(0, 1),
+              //                                   spreadRadius: 0,
+              //                                   blurRadius: 8,
+              //                                   color: Color(0xffFFE4EA))
+              //                             ]),
+              //                       ),
+              //                     );
+              //                   },
+              //                 ),
+              //               )
+              //             : coinsController.getAllCoinsPlane.isEmpty
+              //                 ? Expanded(
+              //                     child: Center(
+              //                       child: Text(
+              //                         "No Users Found",
+              //                         style: TextStyle(
+              //                           fontSize: 18.px,
+              //                           color: AppColors.mainColor,
+              //                           fontWeight: FontWeight.w500,
+              //                           fontFamily: 'bold',
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   )
+              //                 : Expanded(
+              //                     child: GridView.builder(
+              //                       padding:
+              //                           EdgeInsets.symmetric(horizontal: 2.5.h),
+              //                       itemCount:
+              //                           coinsController.getAllCoinsPlane.length,
+              //                       gridDelegate:
+              //                           SliverGridDelegateWithFixedCrossAxisCount(
+              //                               crossAxisCount: 3,
+              //                               mainAxisSpacing: 2.1.h,
+              //                               crossAxisSpacing: 1.6.h),
+              //                       itemBuilder: (context, index) {
+              //                         return Stack(children: [
+              //                           Container(
+              //                             alignment: Alignment.center,
+              //                             padding: EdgeInsets.symmetric(
+              //                                 horizontal: .3.h, vertical: .5.h),
+              //                             height: 13.3.h,
+              //                             width: 13.6.h,
+              //                             decoration: BoxDecoration(
+              //                                 borderRadius:
+              //                                     BorderRadius.circular(1.h),
+              //                                 color: AppColors.whiteColor,
+              //                                 boxShadow: const [
+              //                                   BoxShadow(
+              //                                       offset: Offset(0, 1),
+              //                                       spreadRadius: 0,
+              //                                       blurRadius: 8,
+              //                                       color: Color(0xffFFE4EA))
+              //                                 ]),
+              //                             child: index ==
+              //                                     coinsController
+              //                                             .getAllCoinsPlane
+              //                                             .length -
+              //                                         1
+              //                                 ? GestureDetector(
+              //                                     onTap: () {
+              //                                       openCreateNewPlan(context,
+              //                                           title:
+              //                                               'Create New Plan',
+              //                                           coinPlanId:
+              //                                               coinsController
+              //                                                   .getAllCoinsPlane[
+              //                                                       index]!
+              //                                                   .id,
+              //                                           token: token.value);
+              //                                     },
+              //                                     child: Column(
+              //                                       mainAxisAlignment:
+              //                                           MainAxisAlignment
+              //                                               .center,
+              //                                       children: [
+              //                                         Icon(
+              //                                           size: 4.h,
+              //                                           Icons.add,
+              //                                           color:
+              //                                               AppColors.mainColor,
+              //                                         ),
+              //                                         Text(
+              //                                           'Create new',
+              //                                           style: CustomTextStyles
+              //                                               .buttonTextStyle
+              //                                               .copyWith(
+              //                                                   color: AppColors
+              //                                                       .mainColor,
+              //                                                   fontSize:
+              //                                                       12.px),
+              //                                         )
+              //                                       ],
+              //                                     ),
+              //                                   )
+              //                                 : Column(
+              //                                     mainAxisAlignment:
+              //                                         MainAxisAlignment.center,
+              //                                     children: [
+              //                                       SizedBox(
+              //                                           height: 3.2.h,
+              //                                           child: const Image(
+              //                                               image: AssetImage(
+              //                                                   'assets/pngs/coinicon.png'))),
+              //                                       Text(
+              //                                         '${coinsController.getAllCoinsPlane[index]!.amount}',
+              //                                         style: TextStyle(
+              //                                             fontSize: 14.px,
+              //                                             fontFamily: 'bold',
+              //                                             fontWeight:
+              //                                                 FontWeight.w500,
+              //                                             color: const Color(
+              //                                                 0xff4D4F53)),
+              //                                       ),
+              //                                       getVerticalSpace(1.2.h),
+              //                                       Container(
+              //                                         padding:
+              //                                             EdgeInsets.symmetric(
+              //                                                 horizontal: .5.h,
+              //                                                 vertical: .5.h),
+              //                                         decoration: BoxDecoration(
+              //                                             color: AppColors
+              //                                                 .mainColor,
+              //                                             borderRadius:
+              //                                                 BorderRadius
+              //                                                     .circular(
+              //                                                         5.h)),
+              //                                         child: Text(
+              //                                           '\$${coinsController.getAllCoinsPlane[index]!.priceInCents}',
+              //                                           style: TextStyle(
+              //                                               fontWeight:
+              //                                                   FontWeight.w400,
+              //                                               fontFamily: 'bold',
+              //                                               fontSize: 12.px,
+              //                                               color: AppColors
+              //                                                   .whiteColor),
+              //                                         ),
+              //                                       )
+              //                                     ],
+              //                                   ),
+              //                           ),
+              //                           index ==
+              //                                   coinsController.getAllCoinsPlane
+              //                                           .length -
+              //                                       1
+              //                               ? const SizedBox.shrink()
+              //                               : Positioned(
+              //                                   top: 0.5.h,
+              //                                   right: 1.h,
+              //                                   child: GestureDetector(
+              //                                     onTapDown:
+              //                                         (TapDownDetails details) {
+              //                                       _showPopupMenu(
+              //                                           context,
+              //                                           details.globalPosition,
+              //                                           0);
+              //                                     },
+              //                                     child: SizedBox(
+              //                                       height: 2.5.h,
+              //                                       width: 2.5.h,
+              //                                       child: Icon(
+              //                                         Icons.more_vert,
+              //                                         color: const Color(
+              //                                             0xff282827),
+              //                                         size: 3.5.h,
+              //                                       ),
+              //                                     ),
+              //                                   ),
+              //                                 ),
+              //                         ]);
+              //                       },
+              //                     ),
+              //                   ),
+              //       )
+                   Obx(
                       () => allPlansController.isLoading.value
                           ? ListView.builder(
                               padding: EdgeInsets.zero,
@@ -528,7 +528,7 @@ class _BundlesTabBarState extends State<BundlesTabBar> {
                     )
             ],
           ),
-        ),
+
       ),
     );
   }

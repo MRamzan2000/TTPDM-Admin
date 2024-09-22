@@ -22,7 +22,7 @@ class SuperAdminSettingScreen extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'ADVYRO',
+          'Settings',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,
@@ -59,7 +59,7 @@ class SuperAdminSettingScreen extends StatelessWidget {
                   Get.to(()=>const BundlesTabBar());
                 },
                 child: Text(
-                  'Bundles',
+                  'Subscription',
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontFamily: 'bold',

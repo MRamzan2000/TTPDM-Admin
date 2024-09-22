@@ -48,7 +48,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'ADVYRO',
+          'Campaign',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,

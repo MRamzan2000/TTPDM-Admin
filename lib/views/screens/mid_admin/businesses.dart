@@ -39,7 +39,7 @@ class _BusinessTabBarState extends State<BusinessTabBar> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'ADVYRO',
+          'Businesses',
           style: CustomTextStyles.buttonTextStyle.copyWith(
               fontSize: 20.px,
               fontWeight: FontWeight.w600,

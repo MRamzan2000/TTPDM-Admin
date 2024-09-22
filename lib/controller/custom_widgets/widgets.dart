@@ -6,21 +6,18 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'app_colors.dart';
 import 'custom_text_styles.dart';
 
-//get height
 Widget getVerticalSpace(double height) {
   return SizedBox(
     height: height,
   );
 }
 
-//get width
 Widget getHorizentalSpace(double width) {
   return SizedBox(
     width: width,
   );
 }
 
-//used svg
 Widget svgImage(String path, {Color? color}) {
   return SvgPicture.asset(
     path,
@@ -29,12 +26,10 @@ Widget svgImage(String path, {Color? color}) {
   );
 }
 
-//used png
 Widget pngImage(String name) {
   return Image.asset(name);
 }
 
-//Custom Elevated Button
 Widget customElevatedButton(
     {Callback? onTap,
     required Widget title,
@@ -68,6 +63,7 @@ Widget customTextFormField({
 }) {
   return TextFormField(
     maxLines: maxLines,
+    cursorColor: AppColors.mainColor,
     keyboardType: keyboardType,
     controller: controller,
     decoration: InputDecoration(
@@ -82,7 +78,7 @@ Widget customTextFormField({
         fontFamily: 'regular',
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: focusBorderColor ?? Colors.transparent),
+        borderSide: BorderSide(color: focusBorderColor ?? AppColors.mainColor),
         borderRadius: borderRadius1 ?? BorderRadius.circular(1.h),
       ),
       enabledBorder: OutlineInputBorder(

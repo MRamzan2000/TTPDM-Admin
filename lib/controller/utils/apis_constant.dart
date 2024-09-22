@@ -2,7 +2,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ttpdm_admin/controller/custom_widgets/app_colors.dart';
-
 const baseUrl='https://advyro-efeje5atfcd3hrbq.canadacentral-01.azurewebsites.net/';
 const getAllDesignsEP="campaign/allDesigns";
 const signUpEndP="user/register";
@@ -13,7 +12,7 @@ const forgetPasswordEp="user/forgot-password";
 const resetPasswordEp="user/reset-password";
 const getBusinessByStatusEp="midAdmin/businesses";
 const getDesignRequestEP="midAdmin/design-requests";
-const uploadEP="midAdmin/upload-design";
+const uploadEP="midAdmin/upload-design?";
 const getAllBusinessEp="midAdmin/allBusinessesandCampaigns";
 const changeBusinessStatusEp="midAdmin/change-business-status";
 const getCampaignByStatusEp="midAdmin/campaigns";

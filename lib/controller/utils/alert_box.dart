@@ -22,6 +22,8 @@ import 'package:ttpdm_admin/controller/utils/my_sharedpreference.dart';
 import 'package:ttpdm_admin/controller/utils/preference_keys.dart';
 import 'package:ttpdm_admin/views/screens/auth_section/login_screen.dart';
 
+import '../getx_controllers/get_design_request_controller.dart';
+
 void openChooseEditProfile(
   BuildContext context, {
   required String name,
@@ -978,7 +980,9 @@ void openCampaignStatus(
   final AddCampaignController addCampaignController =
       Get.put(AddCampaignController(context: context));
   final TextEditingController rejectionController = TextEditingController();
-  final GetFcmTokenSendNotificationController getFcmTokenSendNotificationController=Get.put(GetFcmTokenSendNotificationController(context: context));
+  final GetFcmTokenSendNotificationController
+      getFcmTokenSendNotificationController =
+      Get.put(GetFcmTokenSendNotificationController(context: context));
   showDialog(
     context: context,
     builder: (context) {
@@ -1059,25 +1063,29 @@ void openCampaignStatus(
                                                 "Please enter the reason")));
                                   }
                                 } else {
-                                  addCampaignController.changeCampaignStatus(
-                                      token: token,
-                                      campaignId: campaignId,
-                                      status: "rejected",
-                                      rejectionReason:
-                                          rejectionController.text).then((value) {
-                                    getFcmTokenSendNotificationController
-                                        .fetchFcmToken(
-                                        loading:
-                                        getFcmTokenSendNotificationController
-                                            .fcmToken.value ==
-                                            null,
-                                        userId:ownerId ,
-                                        token:token,
-                                        title: "Sorry",
-                                        message: "Campaign Was Rejected",
-                                        info1: "",
-                                        info2: "");
-                                          },);
+                                  addCampaignController
+                                      .changeCampaignStatus(
+                                          token: token,
+                                          campaignId: campaignId,
+                                          status: "rejected",
+                                          rejectionReason:
+                                              rejectionController.text)
+                                      .then(
+                                    (value) {
+                                      getFcmTokenSendNotificationController
+                                          .fetchFcmToken(
+                                              loading:
+                                                  getFcmTokenSendNotificationController
+                                                          .fcmToken.value ==
+                                                      null,
+                                              userId: ownerId,
+                                              token: token,
+                                              title: "Sorry",
+                                              message: "Campaign Was Rejected",
+                                              info1: "",
+                                              info2: "");
+                                    },
+                                  );
                                 }
                               },
                               title: addCampaignController.rejectLoader.value
@@ -1376,7 +1384,9 @@ void manageApproval(
   required String token,
 }) {
   AdminController adminController = Get.put(AdminController(context: context));
-final GetFcmTokenSendNotificationController getFcmTokenSendNotificationController=Get.put(GetFcmTokenSendNotificationController(context: context));
+  final GetFcmTokenSendNotificationController
+      getFcmTokenSendNotificationController =
+      Get.put(GetFcmTokenSendNotificationController(context: context));
   showDialog(
     context: context,
     builder: (context) {
@@ -1448,18 +1458,21 @@ final GetFcmTokenSendNotificationController getFcmTokenSendNotificationControlle
                                   (value) {
                                     getFcmTokenSendNotificationController
                                         .fetchFcmToken(
-                                        loading:
-                                        getFcmTokenSendNotificationController
-                                            .fcmToken.value ==
-                                            null,
-                                        userId:midAdminId ,
-                                        token:token,
-                                        title: "Sorry",
-                                        message: "Manage Request Rejected",
-                                        info1: "",
-                                        info2: "").then((value) {
-                                          Get.back();
-                                        },);
+                                            loading:
+                                                getFcmTokenSendNotificationController
+                                                        .fcmToken.value ==
+                                                    null,
+                                            userId: midAdminId,
+                                            token: token,
+                                            title: "Sorry",
+                                            message: "Manage Request Rejected",
+                                            info1: "",
+                                            info2: "")
+                                        .then(
+                                      (value) {
+                                        Get.back();
+                                      },
+                                    );
                                   },
                                 );
                               },
@@ -1488,18 +1501,21 @@ final GetFcmTokenSendNotificationController getFcmTokenSendNotificationControlle
                                   (value) {
                                     getFcmTokenSendNotificationController
                                         .fetchFcmToken(
-                                        loading:
-                                        getFcmTokenSendNotificationController
-                                            .fcmToken.value ==
-                                            null,
-                                        userId:midAdminId ,
-                                        token:token,
-                                        title: "Congratulation",
-                                        message: "Manage Request Approved",
-                                        info1: "",
-                                        info2: "").then((value) {
-                                          Get.back();
-                                        },);
+                                            loading:
+                                                getFcmTokenSendNotificationController
+                                                        .fcmToken.value ==
+                                                    null,
+                                            userId: midAdminId,
+                                            token: token,
+                                            title: "Congratulation",
+                                            message: "Manage Request Approved",
+                                            info1: "",
+                                            info2: "")
+                                        .then(
+                                      (value) {
+                                        Get.back();
+                                      },
+                                    );
                                   },
                                 );
                               },
@@ -1631,6 +1647,286 @@ void logoutPopUp(BuildContext context) {
                     ],
                   ),
                 ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void openCampaignSubmit(
+  BuildContext context, {
+  required String token,
+  required String businessId,
+  required String ownerId,
+  required String currentUserName,
+  required String id,
+}) {
+  final ImagePickerController imagePickerController =
+      Get.put(ImagePickerController());
+  final DesignRequestController designRequestController =
+      Get.put(DesignRequestController());
+  final GetFcmTokenSendNotificationController
+      getFcmTokenSendNotificationController =
+      Get.put(GetFcmTokenSendNotificationController(context: context));
+
+  RxString isSelected = "This Business".obs;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Obx(
+        () => Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2.h),
+            child: Material(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 2.h, vertical: 2.h),
+                height: 48.h,
+                decoration: BoxDecoration(
+                    color: const Color(0xffF8F9FA),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Expanded(child: SizedBox()),
+                        Text(
+                          'Campaign Data add',
+                          style: TextStyle(
+                              fontSize: 16.px,
+                              fontFamily: 'bold',
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xff191918)),
+                        ),
+                        const Expanded(child: SizedBox()),
+                        getVerticalSpace(1.h),
+                        GestureDetector(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: const SizedBox(
+                              height: 33,
+                              child: Image(
+                                  image:
+                                      AssetImage('assets/pngs/crossicon.png'))),
+                        )
+                      ],
+                    ),
+                    getVerticalSpace(1.h),
+                    Divider(
+                      color: AppColors.textFieldGreyColor,
+                    ),
+                    getVerticalSpace(1.h),
+                    GestureDetector(
+                      onTap: () {
+                        imagePickerController.pickImage(ImageSource.gallery);
+                      },
+                      child: imagePickerController.image.value == null
+                          ? Container(
+                              alignment: Alignment.center,
+                              height: 20.h,
+                              decoration: BoxDecoration(
+                                color: AppColors.textFieldGreyColor,
+                                borderRadius: BorderRadius.circular(2.h),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    size: 5.h,
+                                    Icons.add,
+                                    color: AppColors.mainColor,
+                                  ),
+                                  Text(
+                                    'Upload',
+                                    style: TextStyle(
+                                        fontSize: 16.px,
+                                        fontFamily: 'bold',
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.mainColor),
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(
+                              alignment: Alignment.center,
+                              height: 20.h,
+                              decoration: BoxDecoration(
+                                  color: AppColors.textFieldGreyColor,
+                                  borderRadius: BorderRadius.circular(2.h),
+                                  image: DecorationImage(
+                                      image: FileImage(
+                                        File(imagePickerController
+                                            .image.value!.path),
+                                      ),
+                                      fit: BoxFit.cover)),
+                            ),
+                    ),
+                    getVerticalSpace(1.1.h),
+                    Obx(
+                      () => Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                isSelected.value = "This Business";
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 5.h,
+                                decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(2.h),
+                                    border: Border.all(
+                                        color:
+                                            isSelected.value == "This Business"
+                                                ? AppColors.mainColor
+                                                : Colors.transparent)),
+                                child: Text(
+                                  'This Business',
+                                  style: TextStyle(
+                                      fontSize: 12.px,
+                                      fontFamily: 'bold',
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected.value == "This Business"
+                                          ? AppColors.mainColor
+                                          : Colors.black),
+                                ),
+                              ),
+                            ),
+                          ),
+                          getHorizentalSpace(2.h),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                isSelected.value = "Public";
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 5.h,
+                                decoration: BoxDecoration(
+                                    color: AppColors.whiteColor,
+                                    borderRadius: BorderRadius.circular(2.h),
+                                    border: Border.all(
+                                        color: isSelected.value == "Public"
+                                            ? AppColors.mainColor
+                                            : Colors.transparent)),
+                                child: Text(
+                                  'Public',
+                                  style: TextStyle(
+                                      fontSize: 12.px,
+                                      fontFamily: 'bold',
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected.value == "Public"
+                                          ? AppColors.mainColor
+                                          : Colors.black),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    getVerticalSpace(2.h),
+                    customElevatedButton(
+                      title:designRequestController.uploading.value?spinkit: Text(
+                        'Upload',
+                        style: CustomTextStyles.buttonTextStyle
+                            .copyWith(color: AppColors.whiteColor),
+                      ),
+                      bgColor: AppColors.mainColor,
+                      verticalPadding: .6.h,
+                      horizentalPadding: 4.h,
+                      onTap: () {
+                        if (isSelected.value == "This Business") {
+                          if (imagePickerController.image.value == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Please select an image"),
+                              ),
+                            );
+                          } else {
+                            designRequestController
+                                .uploadProfileImage(
+                              token: token,
+                              designs:
+                                  File(imagePickerController.image.value!.path),
+                              context: context,
+                              businessId: businessId,
+                            )
+                                .then(
+                              (value) {
+                                getFcmTokenSendNotificationController
+                                    .fetchFcmToken(
+                                        loading:
+                                            getFcmTokenSendNotificationController
+                                                    .fcmToken.value ==
+                                                null,
+                                        userId: ownerId,
+                                        token: token,
+                                        title: "Uploaded design",
+                                        message:
+                                            "${currentUserName}Uploaded design",
+                                        info1: id,
+                                        info2: "")
+                                    .then(
+                                      (value) {
+                                        Get.back();
+
+                                      },
+                                    );
+                              },
+                            );
+                          }
+                        } else {
+                          if (imagePickerController.image.value == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Please select an image"),
+                              ),
+                            );
+                          } else {
+                            designRequestController
+                                .uploadProfileImage(
+                              token: token,
+                              designs:
+                                  File(imagePickerController.image.value!.path),
+                              context: context,
+                              businessId: "",
+                            )
+                                .then(
+                              (value) {
+                                getFcmTokenSendNotificationController
+                                    .fetchFcmToken(
+                                        loading:
+                                            getFcmTokenSendNotificationController
+                                                    .fcmToken.value ==
+                                                null,
+                                        userId: ownerId,
+                                        token: token,
+                                        title: "Uploaded design",
+                                        message:
+                                            "${currentUserName}Uploaded design",
+                                        info1: id,
+                                        info2: "")
+                                    .then(
+                                      (value) {
+                                        Get.back();
+                                      },
+                                    );
+                              },
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
